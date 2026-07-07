@@ -1,0 +1,7 @@
+{
+  "name": "Markdown Preview",
+  "version": "1.0.0",
+  "icon": "📝",
+  "entry": "index.js",
+  "description": "Renders live formatted side-by-side previews for all active markdown (.md) documents."
+}

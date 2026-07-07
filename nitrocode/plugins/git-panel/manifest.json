@@ -1,0 +1,7 @@
+{
+  "name": "Git Panel",
+  "version": "1.0.0",
+  "icon": "🐙",
+  "entry": "index.js",
+  "description": "Built-in source version control pane for staging, committing, and pushing."
+}

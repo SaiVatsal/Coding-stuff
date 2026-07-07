@@ -1,0 +1,7 @@
+{
+  "name": "NPM Runner",
+  "version": "1.0.0",
+  "icon": "📦",
+  "entry": "index.js",
+  "description": "Scans package.json scripts and executes them with one click inside terminal."
+}

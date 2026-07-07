@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Dark UI Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0A0B;
+}
+::-webkit-scrollbar-thumb {
+  background: #1A1A1F;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1F1F28;
+}
+
+/* Custom terminal integration styling overrides */
+.xterm-viewport {
+  background-color: #0D0D10 !important;
+}
+
+.xterm-screen {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Global Monaco Editor theme injection placeholder overrides */
+.monaco-editor, .monaco-editor .margin {
+  background-color: #0A0A0B !important;
+}

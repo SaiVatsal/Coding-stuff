@@ -1,0 +1,7 @@
+{
+  "name": "TODO Tracker",
+  "version": "1.0.0",
+  "icon": "📋",
+  "entry": "index.js",
+  "description": "Scans workspace files for TODO/FIXME comments with direct navigation links."
+}

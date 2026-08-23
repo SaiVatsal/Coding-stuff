@@ -14,7 +14,7 @@ window.ReactMarkdown = ReactMarkdown;
 // Initialize the global NitroCode Plugin API
 window.NitroCodeAPI = {
   store: useStore,
-  
+
   registerPanel: (pluginId, panelComponent) => {
     // Allows plugins to register custom panels
     console.log(`Plugin '${pluginId}' registered a sidebar panel.`);

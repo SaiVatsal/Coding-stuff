@@ -23,7 +23,20 @@ async function connectServer(server) {
   const isHttp = server.url.startsWith('http://') || server.url.startsWith('https://');
 
   if (isHttp) {
-    const url = new URL(server.url);
+    let url;
+    try {
+      url = new URL(server.url);
+    } catch (e) {
+      throw new Error(`Invalid MCP server URL: ${server.url}`);
+    }
+    // SSRF protection: block internal/loopback IPs except localhost (Ollama etc.)
+    const hostname = url.hostname.toLowerCase();
+    const blockedPatterns = [/^10\./, /^172\.(1[6-9]|2\d|3[01])\./, /^192\.168\./, /^169\.254\./, /^0\.0\.0\.0$/, /^\[?::1\]?$/];
+    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+    const isBlocked = !isLocalhost && blockedPatterns.some(re => re.test(hostname));
+    if (isBlocked) {
+      throw new Error(`MCP server URL points to a blocked internal address: ${hostname}`);
+    }
     if (server.token) {
       url.searchParams.set('token', server.token);
     }

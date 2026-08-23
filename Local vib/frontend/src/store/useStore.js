@@ -184,8 +184,10 @@ export const useStore = create((set, get) => ({
   chatHistory: {}, // filePath -> messages[]
   costThisSession: 0.0,
   sessionTokens: 0,
-  activeModel: 'gemini-2.0-flash',
+  activeModel: 'gemini-2.5-flash',
   availableModels: [],
+  suggestedModels: [],   // Suggested based on system hardware
+  systemInfo: null,      // { ramGB, freeRamGB, cpuName, gpu })
   addChatMessage: (filePath, message) => {
     set((state) => {
       const history = state.chatHistory[filePath] || [];
@@ -213,8 +215,9 @@ export const useStore = create((set, get) => ({
     try {
       const res = await fetch('/api/ollama/models');
       const localModels = await res.json();
-      
+
       const cloudModels = [
+        { name: 'claude-sonnet-4-5', label: 'Claude Sonnet 4.5', status: 'ready', type: 'cloud', badges: ['fast', 'code', 'latest'] },
         { name: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet', status: 'ready', type: 'cloud', badges: ['fast', 'code', 'large-ctx'] },
         { name: 'claude-3-opus-20240229', label: 'Claude 3 Opus', status: 'ready', type: 'cloud', badges: ['reasoning', 'large-ctx'] },
         { name: 'gpt-4o', label: 'GPT-4o', status: 'ready', type: 'cloud', badges: ['fast', 'code', 'vision'] },
@@ -224,12 +227,28 @@ export const useStore = create((set, get) => ({
       ];
 
       const merged = [
-        ...localModels.map(m => ({ ...m, type: 'local', badges: ['local', 'fast'] })),
+        ...localModels.map(m => ({ ...m, type: 'local', badges: ['local'] })),
         ...cloudModels
       ];
       set({ availableModels: merged });
     } catch (e) {
       console.error('Failed to fetch Ollama models:', e);
+    }
+  },
+  fetchSystemInfo: async () => {
+    try {
+      const [infoRes, suggestRes] = await Promise.all([
+        fetch('/api/system/info'),
+        fetch('/api/system/suggest')
+      ]);
+      const info = await infoRes.json();
+      const suggest = await suggestRes.json();
+      set({
+        systemInfo: info,
+        suggestedModels: suggest.suggestions || []
+      });
+    } catch (e) {
+      console.error('Failed to fetch system info:', e);
     }
   },
 

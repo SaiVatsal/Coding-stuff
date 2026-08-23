@@ -84,6 +84,7 @@ export default function App() {
     store.fetchSettings();
     store.fetchFileTree();
     store.fetchPlugins();
+    store.fetchSystemInfo(); // Detect RAM/GPU for model suggestions
     store.createTerminal(); // Create initial terminal on boot
 
     

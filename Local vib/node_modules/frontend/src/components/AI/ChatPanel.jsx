@@ -21,9 +21,10 @@ export default function ChatPanel() {
 
   const messagesEndRef = useRef(null);
 
-  // Sync active file changes
+  // Sync active file changes — fall back to __general__ key for file-less chat
   const activeFile = store.activeFile;
-  const messages = activeFile ? (store.chatHistory[activeFile] || []) : [];
+  const chatKey = activeFile || '__general__';
+  const messages = store.chatHistory[chatKey] || [];
 
   useEffect(() => {
     scrollToBottom();
@@ -80,7 +81,10 @@ Otherwise, respond in standard Markdown style.`;
 
   const handleSend = async (customPrompt) => {
     const textToSend = customPrompt || inputMsg;
-    if (!textToSend.trim() || !activeFile) return;
+    if (!textToSend.trim()) return;
+
+    // Use activeFile as key, fall back to '__general__' for file-less chat
+    const chatKey = activeFile || '__general__';
 
     setInputMsg('');
     setLoading(true);
@@ -90,13 +94,13 @@ Otherwise, respond in standard Markdown style.`;
     const promptTokens = estimateTokenCount(textToSend);
 
     // 2. Append User Message
-    store.addChatMessage(activeFile, { role: 'user', content: textToSend });
+    store.addChatMessage(chatKey, { role: 'user', content: textToSend });
 
     // 3. Build message thread
     const systemPrompt = compileSystemPrompt();
     const chatThread = [
       { role: 'system', content: systemPrompt },
-      ...(store.chatHistory[activeFile] || []).map(m => ({ role: m.role, content: m.content }))
+      ...(store.chatHistory[chatKey] || []).map(m => ({ role: m.role, content: m.content }))
     ];
 
     try {
@@ -118,9 +122,9 @@ Otherwise, respond in standard Markdown style.`;
       store.addSessionCost(requestCost);
 
       // Append AI Reply to conversation
-      store.addChatMessage(activeFile, { 
-        role: 'assistant', 
-        content: fullReply,
+      store.addChatMessage(chatKey, {
+        role: 'assistant',
+        content: fullReply || '*(No response received)*',
         tokens: replyTokens,
         cost: requestCost
       });
@@ -139,21 +143,21 @@ Otherwise, respond in standard Markdown style.`;
 
       // Check token budget warning (threshold 80,000 for warning, 100,000 for auto summarize)
       if (store.sessionTokens > 100000) {
-        // Auto summarize
-        store.addChatMessage(activeFile, { 
-          role: 'system', 
-          content: 'Context budget exceeded 100k tokens. Auto-summarizing session logs...' 
+        store.addChatMessage(chatKey, {
+          role: 'system',
+          content: 'Context budget exceeded 100k tokens. Auto-summarizing session logs...'
         });
-        store.clearChatHistory(activeFile);
-        store.addChatMessage(activeFile, { 
-          role: 'assistant', 
-          content: 'Context refreshed. I have summarized the conversation to free up capacity.' 
+        store.clearChatHistory(chatKey);
+        store.addChatMessage(chatKey, {
+          role: 'assistant',
+          content: 'Context refreshed. I have summarized the conversation to free up capacity.'
         });
       }
 
     } catch (err) {
       console.error(err);
-      store.addChatMessage(activeFile, { role: 'assistant', content: `Error: ${err.message}` });
+      const errMsg = err?.message || String(err) || 'Unknown error occurred';
+      store.addChatMessage(chatKey, { role: 'assistant', content: `⚠️ **Error:** ${errMsg}` });
     } finally {
       setLoading(false);
       setStreamedText('');
@@ -334,33 +338,34 @@ Otherwise, respond in standard Markdown style.`;
           /* Normal Message viewport */
           <div className="flex-1 overflow-y-auto p-3 space-y-3.5">
             {!activeFile ? (
-              <div className="h-full flex flex-col items-center justify-center text-center text-text-secondary p-4 gap-2">
-                <Sparkles size={24} className="text-text-secondary opacity-30" />
-                <p>Open a file to begin chatting with NitroCode AI.</p>
+              <div className="h-full flex flex-col items-center justify-center text-center text-text-secondary p-4 gap-3">
+                <Sparkles size={28} className="text-accent-custom opacity-40" />
+                <p className="font-semibold text-text-primary text-sm">NitroCode AI</p>
+                <p className="text-[11px] opacity-70">Ask me anything — or open a file for context-aware code help.</p>
               </div>
             ) : (
               <>
                 {messages.map((msg, idx) => (
-                  <div 
-                    key={idx} 
+                  <div
+                    key={idx}
                     className={`flex flex-col gap-1 max-w-[85%] ${
                       msg.role === 'user' ? 'ml-auto items-end' : 'mr-auto items-start'
                     }`}
                   >
-                    <div 
+                    <div
                       className={`p-2.5 rounded-lg text-left leading-relaxed ${
-                        msg.role === 'user' 
-                          ? 'bg-accent-custom text-white rounded-tr-none' 
+                        msg.role === 'user'
+                          ? 'bg-accent-custom text-white rounded-tr-none'
                           : 'bg-bg-tertiary text-text-primary rounded-tl-none border border-border-custom'
                       }`}
                     >
                       <ReactMarkdown components={MarkdownComponents}>
-                        {msg.content}
+                        {String(msg.content || '')}
                       </ReactMarkdown>
                     </div>
                     {msg.tokens && (
                       <span className="text-[9px] text-text-secondary/60">
-                        {msg.tokens} tokens • ${msg.cost}
+                        {msg.tokens} tokens • ${msg.cost?.toFixed(4)}
                       </span>
                     )}
                   </div>
@@ -390,32 +395,30 @@ Otherwise, respond in standard Markdown style.`;
         )}
       </div>
 
-      {/* Input panel */}
-      {activeFile && (
-        <div className="p-3 border-t border-border-custom bg-bg-secondary flex flex-col gap-2">
-          <div className="flex items-center bg-bg-tertiary border border-border-custom rounded-lg px-2 py-1.5 focus-within:border-accent-custom">
-            <textarea 
-              id="chat-input-textarea"
-              value={inputMsg}
-              onChange={(e) => setInputMsg(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-              placeholder="Ask AI, write code..."
-              className="flex-1 bg-transparent text-xs text-text-primary outline-none resize-none h-12 max-h-32"
-            />
-            <div className="flex items-center gap-1 ml-1.5">
-              <VoiceInput onTranscript={(txt) => setInputMsg(txt)} />
-              <button 
-                onClick={() => handleSend()}
-                disabled={loading || !inputMsg.trim()}
-                className="p-1.5 bg-accent-custom hover:bg-accent-hover text-white rounded cursor-pointer disabled:opacity-40"
-              >
-                <Send size={12} />
-              </button>
-            </div>
+      {/* Input panel — always visible */}
+      <div className="p-3 border-t border-border-custom bg-bg-secondary flex flex-col gap-2">
+        <div className="flex items-center bg-bg-tertiary border border-border-custom rounded-lg px-2 py-1.5 focus-within:border-accent-custom">
+          <textarea
+            id="chat-input-textarea"
+            value={inputMsg}
+            onChange={(e) => setInputMsg(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+            placeholder={activeFile ? `Ask about ${activeFile.split('/').pop()}...` : 'Ask AI anything...'}
+            className="flex-1 bg-transparent text-xs text-text-primary outline-none resize-none h-12 max-h-32"
+          />
+          <div className="flex items-center gap-1 ml-1.5">
+            <VoiceInput onTranscript={(txt) => setInputMsg(txt)} />
+            <button
+              onClick={() => handleSend()}
+              disabled={loading || !inputMsg.trim()}
+              className="p-1.5 bg-accent-custom hover:bg-accent-hover text-white rounded cursor-pointer disabled:opacity-40"
+            >
+              <Send size={12} />
+            </button>
           </div>
-          <CostTracker />
         </div>
-      )}
+        <CostTracker />
+      </div>
     </div>
   );
 }

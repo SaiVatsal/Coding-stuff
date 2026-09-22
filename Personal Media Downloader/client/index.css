@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body, #root { height: 100%; }
+
+body {
+  @apply bg-zinc-950 text-zinc-100 antialiased;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.light body { @apply bg-zinc-50 text-zinc-900; }
+
+@layer components {
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+  .light .glass { @apply bg-white/70 border-zinc-200; }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium transition-all
+           focus:outline-none focus:ring-2 focus:ring-brand-500/50 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/20
+           hover:shadow-brand-500/40 hover:from-brand-500 hover:to-brand-600 active:scale-[0.98];
+  }
+  .btn-ghost { @apply btn hover:bg-white/10 text-zinc-300; }
+  .light .btn-ghost { @apply hover:bg-zinc-100 text-zinc-700; }
+  .input {
+    @apply w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-zinc-100
+           placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50
+           focus:border-brand-500/50 transition-all;
+  }
+  .light .input { @apply bg-white border-zinc-200 text-zinc-900 placeholder-zinc-400; }
+  .card { @apply glass rounded-2xl p-5 shadow-xl shadow-black/20; }
+  .skeleton {
+    @apply bg-gradient-to-r from-white/5 via-white/10 to-white/5 bg-[length:200%_100%]
+           animate-shimmer rounded-lg;
+  }
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }

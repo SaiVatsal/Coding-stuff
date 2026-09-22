@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GTA VI Live Internet & Open World Engine Testbed</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --vc-pink: #ff2a85;
+      --vc-pink-glow: rgba(255, 42, 133, 0.4);
+      --vc-cyan: #00f0ff;
+      --vc-cyan-glow: rgba(0, 240, 255, 0.35);
+      --vc-amber: #f59e0b;
+      --vc-green: #10b981;
+      --vc-purple: #9d4edd;
+      --bg-dark: #07090e;
+      --bg-panel: #0f131f;
+      --bg-card: #151a2b;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(255, 42, 133, 0.3);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font-display: 'Chakra Petch', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 10% 10%, rgba(255, 42, 133, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(0, 240, 255, 0.08) 0%, transparent 40%);
+    }
+
+    /* Top Navigation Header */
+    header {
+      background: rgba(15, 19, 31, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 700;
+      font-style: italic;
+      letter-spacing: 0.05em;
+      background: linear-gradient(135deg, #ff2a85 0%, #00f0ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      background: rgba(255, 42, 133, 0.15);
+      border: 1px solid var(--vc-pink);
+      color: var(--vc-pink);
+      border-radius: 4px;
+      font-style: normal;
+      -webkit-text-fill-color: var(--vc-pink);
+    }
+
+    .header-stats {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-card);
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+    }
+
+    .wanted-stars {
+      color: #374151;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .wanted-stars .active-star {
+      color: #ef4444;
+      text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+      animation: pulseStar 0.8s infinite alternate;
+    }
+
+    @keyframes pulseStar {
+      from { transform: scale(1); }
+      to { transform: scale(1.2); }
+    }
+
+    /* Main Engine Layout */
+    .engine-workspace {
+      display: grid;
+      grid-template-columns: 320px 1fr 390px;
+      gap: 1.25rem;
+      padding: 1.25rem;
+      flex: 1;
+      max-width: 1920px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 1400px) {
+      .engine-workspace {
+        grid-template-columns: 280px 1fr 340px;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .engine-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Sidebar: Dual Protagonists & Armory */
+    .sidebar-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.2rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.6rem;
+    }
+
+    /* Protagonist Switcher Tabs */
+    .protagonist-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .btn-protagonist {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font-display);
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      transition: all 0.25s ease;
+    }
+
+    .btn-protagonist:hover {
+      border-color: var(--vc-pink);
+      color: var(--text-main);
+    }
+
+    .btn-protagonist.active {
+      background: linear-gradient(135deg, rgba(255, 42, 133, 0.2) 0%, rgba(15, 19, 31, 0.8) 100%);
+      border-color: var(--vc-pink);
+      color: #fff;
+      box-shadow: 0 0 16px var(--vc-pink-glow);
+    }
+
+    .protagonist-status-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: normal;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--vc-green);
+    }
+
+    .stat-bar-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-top: 0.8rem;
+    }
+
+    .stat-bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .stat-label-wrap {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .progress-track {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .fill-health { background: #ef4444; width: 100%; }
+    .fill-armor { background: #3b82f6; width: 75%; }
+    .fill-stamina { background: #10b981; width: 90%; }
+    .fill-hydration { background: #06b6d4; width: 85%; }
+
+    /* Weapon Sockets */
+    .weapon-socket-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .weapon-slot-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .weapon-slot-item:hover, .weapon-slot-item.equipped {
+      border-color: var(--vc-cyan);
+      background: rgba(0, 240, 255, 0.08);
+    }
+
+    .weapon-slot-name {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .weapon-ammo-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--vc-amber);
+    }
+
+    /* Companion Action Palette */
+    .companion-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+
+    .btn-action {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.55rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--vc-pink);
+    }
+
+    /* Center Stage: Simulated World & Mechanics Viewport */
+    .center-stage {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .viewport-container {
+      background: #000;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      height: 380px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1rem;
+      background-image: linear-gradient(180deg, rgba(7, 9, 14, 0.2) 0%, rgba(7, 9, 14, 0.8) 100%), url('https://images.unsplash.com/photo-1533105079780-92b9be482077?w=1600&auto=format&fit=crop&q=80');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .viewport-overlay-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      z-index: 10;
+    }
+
+    .location-tag {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .location-sub {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--vc-cyan);
+      font-weight: normal;
+    }
+
+    .sensory-focus-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, transparent 40%, rgba(0, 240, 255, 0.25) 100%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      mix-blend-mode: screen;
+    }
+
+    .sensory-focus-active .sensory-focus-overlay {
+      opacity: 1;
+    }
+
+    .viewport-hud-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      z-index: 10;
+    }
+
+    .speedometer-widget {
+      background: rgba(15, 19, 31, 0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      font-family: var(--font-display);
+    }
+
+    .speed-number {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--vc-cyan);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .speed-unit {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .gear-badge {
+      background: var(--vc-pink);
+      color: #fff;
+      font-size: 0.8rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-left: 0.6rem;
+      font-family: var(--font-mono);
+    }
+
+    /* Live Police Radio Log */
+    .radio-log-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      max-height: 110px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .radio-entry {
+      color: #93c5fd;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .radio-entry .time {
+      color: var(--text-muted);
+    }
+
+    /* Middle Panels: Vehicle & Crime Controls */
+    .controls-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-sm {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-sm:hover {
+      border-color: var(--vc-cyan);
+      color: var(--vc-cyan);
+    }
+
+    .btn-danger {
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* Right Sidebar: In-Game Smartphone (Eyefind, BAWSAQ, Reelz) */
+    .phone-container {
+      background: #111420;
+      border: 2px solid #2d3748;
+      border-radius: 36px;
+      padding: 0.85rem;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 42, 133, 0.15);
+      display: flex;
+      flex-direction: column;
+      height: 720px;
+      position: relative;
+    }
+
+    .phone-notch {
+      width: 120px;
+      height: 18px;
+      background: #07090e;
+      border-radius: 0 0 12px 12px;
+      margin: 0 auto 0.6rem auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .camera-lens {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #1e293b;
+      border: 1px solid #334155;
+    }
+
+    .speaker-slot {
+      width: 32px;
+      height: 3px;
+      border-radius: 2px;
+      background: #334155;
+    }
+
+    .phone-screen {
+      background: #080b12;
+      border-radius: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .phone-status-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .phone-app-nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: #0f1322;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.3rem;
+      gap: 0.2rem;
+    }
+
+    .phone-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.5rem 0.2rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+      transition: all 0.2s;
+    }
+
+    .phone-tab-btn.active {
+      color: var(--vc-pink);
+      background: rgba(255, 42, 133, 0.12);
+    }
+
+    .phone-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    /* Eyefind Search In-App */
+    .search-bar-wrap {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .search-input {
+      flex: 1;
+      background: #171d30;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.5rem 0.8rem;
+      color: #fff;
+      font-size: 0.8rem;
+      font-family: var(--font-body);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--vc-pink);
+      box-shadow: 0 0 10px var(--vc-pink-glow);
+    }
+
+    .btn-search {
+      background: var(--vc-pink);
+      border: none;
+      color: #fff;
+      padding: 0 0.8rem;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .search-result-card {
+      background: #131829;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+
+    .search-result-card:hover {
+      border-color: var(--vc-cyan);
+    }
+
+    .result-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--vc-cyan);
+      text-decoration: none;
+    }
+
+    .result-snippet {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      line-height: 1.35;
+    }
+
+    .result-author {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      color: var(--vc-pink);
+    }
+
+    /* BAWSAQ Market Tab */
+    .stock-ticker-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #131829;
+      border: 1px solid var(--border-color);
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+    }
+
+    .stock-symbol {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .stock-name {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .stock-price {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-align: right;
+    }
+
+    .stock-change {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+    }
+
+    .positive { color: var(--vc-green); }
+    .negative { color: #ef4444; }
+
+    /* Leonida Reelz Feed */
+    .reel-post {
+      background: #131829;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .reel-video-placeholder {
+      height: 140px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      padding: 0.6rem;
+      position: relative;
+    }
+
+    .reel-video-placeholder::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.8) 100%);
+    }
+
+    .reel-caption {
+      padding: 0.6rem 0.75rem;
+      font-size: 0.75rem;
+      line-height: 1.35;
+    }
+
+    .reel-meta {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 0.75rem 0.6rem 0.75rem;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .witness-call-banner {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.8rem;
+      display: none;
+      animation: alertPulse 1s infinite alternate;
+    }
+
+    @keyframes alertPulse {
+      from { background: rgba(239, 68, 68, 0.15); }
+      to { background: rgba(239, 68, 68, 0.35); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="brand-title">
+      LEONIDA OPEN WORLD ENGINE <span class="brand-badge">UE 5.5 C++ LIVE</span>
+    </div>
+    <div class="header-stats">
+      <div class="stat-pill" style="background: rgba(255, 42, 133, 0.15); border-color: var(--vc-pink);">
+        <span style="color: var(--vc-pink); font-weight: bold;">8K NATIVE .EXE:</span>
+        <a href="../Standalone_Executable/GTA6_Leonida_8K_Simulator.exe" download="GTA6_Leonida_8K_Simulator.exe" style="color: #fff; text-decoration: none; font-weight: bold; background: var(--vc-pink); padding: 3px 10px; border-radius: 4px; font-size: 0.75rem;">⬇️ Launch 8K Simulator .EXE</a>
+      </div>
+      <div class="stat-pill">
+        <span style="color: var(--vc-pink);">FPS:</span> <span id="fpsCounter">60.0</span>
+      </div>
+      <div class="stat-pill">
+        <span style="color: var(--vc-cyan);">GATEWAY:</span> <span id="gatewayStatus" style="color: var(--vc-green);">ONLINE (127.0.0.1:8080)</span>
+      </div>
+      <div class="stat-pill">
+        <span>WANTED:</span>
+        <div class="wanted-stars" id="wantedStarsContainer">
+          <span class="star-icon">★</span>
+          <span class="star-icon">★</span>
+          <span class="star-icon">★</span>
+          <span class="star-icon">★</span>
+          <span class="star-icon">★</span>
+          <span class="star-icon">★</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Engine Workspace -->
+  <div class="engine-workspace">
+
+    <!-- Left Sidebar: Dual Protagonists & Armory -->
+    <div class="sidebar-panel">
+
+      <!-- Protagonist Selector -->
+      <div class="card">
+        <div class="card-title">
+          <span>DUAL PROTAGONIST STATE</span>
+          <span class="protagonist-status-badge" id="companionStateBadge">ACTIVE: LUCIA</span>
+        </div>
+
+        <div class="protagonist-tabs">
+          <button class="btn-protagonist active" id="btnLucia" onclick="switchCharacter('Lucia')">
+            <span>LUCIA CAMINOS</span>
+            <span style="font-size: 0.65rem; color: var(--vc-pink);">Direct Control</span>
+          </button>
+          <button class="btn-protagonist" id="btnJason" onclick="switchCharacter('Jason')">
+            <span>JASON DUVAL</span>
+            <span style="font-size: 0.65rem; color: var(--text-muted);">Companion AI</span>
+          </button>
+        </div>
+
+        <!-- Dynamic Physiology Bars -->
+        <div class="stat-bar-group">
+          <div class="stat-bar-row">
+            <div class="stat-label-wrap"><span>HEALTH</span><span id="valHealth">100 / 100</span></div>
+            <div class="progress-track"><div class="progress-fill fill-health" id="barHealth"></div></div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-label-wrap"><span>BODY ARMOR</span><span id="valArmor">75 / 100</span></div>
+            <div class="progress-track"><div class="progress-fill fill-armor" id="barArmor"></div></div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-label-wrap"><span>STAMINA (METABOLISM)</span><span id="valStamina">92%</span></div>
+            <div class="progress-track"><div class="progress-fill fill-stamina" id="barStamina"></div></div>
+          </div>
+          <div class="stat-bar-row">
+            <div class="stat-label-wrap"><span>HYDRATION</span><span id="valHydration">85%</span></div>
+            <div class="progress-track"><div class="progress-fill fill-hydration" id="barHydration"></div></div>
+          </div>
+        </div>
+
+        <!-- Companion Tactical Commands -->
+        <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <span style="font-size: 0.75rem; font-family: var(--font-mono); color: var(--text-muted);">COMPANION TACTICAL AI</span>
+            <span id="companionPostureBadge" style="font-size: 0.65rem; font-family: var(--font-mono); color: var(--vc-cyan); background: rgba(0,240,255,0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(0,240,255,0.3);">FOLLOWING (3.5m)</span>
+          </div>
+
+          <!-- Live Ammo & Status -->
+          <div style="display: flex; justify-content: space-between; font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-muted); margin-bottom: 0.5rem;">
+            <span>AMMO: <strong id="companionAmmoText" style="color: #fff;">180 / 180 (5.56 NATO)</strong></span>
+            <span>ENGAGEMENT: <strong id="companionStanceText" style="color: var(--vc-green);">TACTICAL COVER</strong></span>
+          </div>
+
+          <!-- Sync Takedown Progress Bar -->
+          <div id="syncTakedownProgressWrap" style="display: none; margin-bottom: 0.6rem; background: rgba(255,42,133,0.1); border: 1px solid var(--vc-pink); padding: 0.4rem; border-radius: 6px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.7rem; font-family: var(--font-mono); color: var(--vc-pink); margin-bottom: 0.2rem;">
+              <span>🎯 SYNC TAKEDOWN LOCK</span>
+              <span id="syncTakedownTimerDisplay">3.0s</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="syncTakedownBar" style="background: var(--vc-pink); width: 100%; transition: width 0.1s linear;"></div></div>
+          </div>
+
+          <div class="companion-grid">
+            <button class="btn-action" onclick="issueCompanionCommand('Move to Ping')">📍 Ping Move</button>
+            <button class="btn-action" onclick="issueCompanionCommand('Suppressive Fire')">🔥 Suppress</button>
+            <button class="btn-action" onclick="issueCompanionCommand('Sync Takedown')">🗡️ Takedown</button>
+            <button class="btn-action" onclick="issueCompanionCommand('Breach & Clear')">🚪 Breach</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Physicalized Armory & Duffle Bag -->
+      <div class="card">
+        <div class="card-title">
+          <span>PHYSICALIZED ARMORY</span>
+          <span style="font-size: 0.7rem; font-family: var(--font-mono); color: var(--vc-amber);" id="lootCashLabel">$245,000 (Duffle Bag)</span>
+        </div>
+
+        <div class="weapon-socket-grid">
+          <div class="weapon-slot-item equipped" onclick="selectWeapon('9mm Pistol', this)">
+            <div class="weapon-slot-name">🔫 <span>Right Hip: Combat 9mm</span></div>
+            <div class="weapon-ammo-tag">15 / 60</div>
+          </div>
+          <div class="weapon-slot-item" onclick="selectWeapon('Carbine Rifle', this)">
+            <div class="weapon-slot-name">🎯 <span>Back Sling: Tactical Carbine</span></div>
+            <div class="weapon-ammo-tag">30 / 180</div>
+          </div>
+          <div class="weapon-slot-item" onclick="selectWeapon('Pump Shotgun', this)">
+            <div class="weapon-slot-name">💥 <span>Shoulder: Heavy 12-Gauge</span></div>
+            <div class="weapon-ammo-tag">8 / 32</div>
+          </div>
+          <div class="weapon-slot-item" onclick="stashInTrunk()">
+            <div class="weapon-slot-name">🚗 <span>Vehicle Trunk Armory</span></div>
+            <div class="weapon-ammo-tag">3 Stashed</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Center Stage: Simulated World & Mechanics Viewport -->
+    <div class="center-stage">
+
+      <!-- 3D World Viewport Simulation -->
+      <div class="viewport-container" id="viewportStage">
+        <div class="sensory-focus-overlay" id="sensoryOverlay"></div>
+
+        <div class="viewport-overlay-top">
+          <div class="location-tag">
+            <span id="activeLocation">VICE CITY METRO &bull; OCEAN DRIVE</span>
+            <span class="location-sub" id="currentWeatherSub">CLIMATE: TROPICAL &bull; 86&deg;F &bull; DRY ASPHALT</span>
+          </div>
+          <div>
+            <button class="btn-sm" id="btnSensoryFocus" onclick="toggleSensoryFocus()" style="border-color: var(--vc-cyan); color: var(--vc-cyan);">
+              👁️ SENSORY FOCUS (SLOMO)
+            </button>
+          </div>
+        </div>
+
+        <!-- Witness 911 Alert Banner -->
+        <div class="witness-call-banner" id="witnessAlertBanner">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 700; color: #ef4444; font-size: 0.85rem;">⚠️ WITNESS DIALING 911! (<span id="witnessTimer">6.0</span>s REMAINING)</span>
+            <button class="btn-sm btn-danger" onclick="interceptWitness()">INTERCEPT / INTIMIDATE</button>
+          </div>
+        </div>
+
+        <div class="viewport-hud-bottom">
+          <div class="speedometer-widget">
+            <span class="speed-number" id="speedDisplay">128</span>
+            <span class="speed-unit">KM/H</span>
+            <span class="gear-badge" id="gearDisplay">GEAR 4</span>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn-sm" onclick="triggerVehicleTheft()">🔓 HIJACK TORERO XO</button>
+            <button class="btn-sm btn-danger" onclick="commitCrime('Armored Car Robbery', 2)">🚨 ROB ARMORED CAR</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls Split: Vehicle Dynamics & Heat Dispatch -->
+      <div class="controls-split">
+
+        <!-- Vehicle Dynamics & Surface -->
+        <div class="card">
+          <div class="card-title">
+            <span>VEHICLE CHAOS DYNAMICS</span>
+            <span style="font-size: 0.7rem; color: var(--vc-cyan);" id="vehicleModelTag">PEGASSI TORERO XO</span>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.6rem;">
+            Surface Traction Multiplier: <strong id="surfaceGripTag" style="color: #fff;">1.00x (Dry Asphalt)</strong>
+          </div>
+          <div class="btn-group">
+            <button class="btn-sm" onclick="setSurface('Dry Asphalt', 1.0)">🛣️ Asphalt</button>
+            <button class="btn-sm" onclick="setSurface('Wet Rain Slick', 0.65)">🌧️ Wet Rain</button>
+            <button class="btn-sm" onclick="setSurface('Swamp Mud', 0.40)">🐊 Swamp Mud</button>
+            <button class="btn-sm" onclick="setSurface('Beach Sand', 0.55)">🏖️ Sand</button>
+            <button class="btn-sm btn-danger" onclick="blowTire()">💥 Blow Tire</button>
+            <button class="btn-sm" onclick="repairTire()" style="border-color: var(--vc-green); color: var(--vc-green);">🔧 Swap Rim</button>
+          </div>
+        </div>
+
+        <!-- Police Radio & Dispatch Log -->
+        <div class="card">
+          <div class="card-title">
+            <span>VCPD DISPATCH & SURVEILLANCE</span>
+            <button class="btn-sm" onclick="clearWanted()">CLEAR HEAT</button>
+          </div>
+          <div class="radio-log-box" id="policeRadioLog">
+            <div class="radio-entry"><span class="time">[14:02:11]</span> <span>VCPD Central: All patrol units standing by in Biscayne district.</span></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Right Sidebar: In-Game Smartphone (Eyefind, BAWSAQ, Reelz) -->
+    <div class="phone-container">
+      <div class="phone-notch">
+        <div class="camera-lens"></div>
+        <div class="speaker-slot"></div>
+      </div>
+
+      <div class="phone-screen">
+        <!-- Status Bar -->
+        <div class="phone-status-bar">
+          <span id="phoneClock">14:02 PM</span>
+          <span>5G &bull; 94% 🔋</span>
+        </div>
+
+        <!-- Phone App Navigation -->
+        <div class="phone-app-nav">
+          <button class="phone-tab-btn active" onclick="switchPhoneTab('eyefind', event)">🌐 Eyefind</button>
+          <button class="phone-tab-btn" onclick="switchPhoneTab('bawsaq', event)">📈 BAWSAQ</button>
+          <button class="phone-tab-btn" onclick="switchPhoneTab('reelz', event)">📱 Reelz</button>
+          <button class="phone-tab-btn" onclick="switchPhoneTab('bank', event)">🏦 Bank</button>
+        </div>
+
+        <!-- Phone App Content Body -->
+        <div class="phone-body" id="phoneBody">
+
+          <!-- 1. Eyefind Search View -->
+          <div id="tabEyefind" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div class="search-bar-wrap">
+              <input type="text" class="search-input" id="searchQueryInput" placeholder="Search Eyefind or type URL..." value="gator in gas station">
+              <button class="btn-search" onclick="performEyefindSearch()">GO</button>
+            </div>
+
+            <div style="display: flex; gap: 0.3rem; overflow-x: auto; padding-bottom: 0.2rem;">
+              <button class="btn-sm" onclick="quickSearch('Vice City Real Estate')">🌴 Housing</button>
+              <button class="btn-sm" onclick="quickSearch('Ammu-Nation Specials')">🔫 Weapons</button>
+              <button class="btn-sm" onclick="quickSearch('Hurricane Warning')">🌀 Weather</button>
+            </div>
+
+            <div id="searchResultsContainer" style="display: flex; flex-direction: column; gap: 0.6rem;">
+              <!-- Dynamic search results render here -->
+            </div>
+          </div>
+
+          <!-- 2. BAWSAQ Stocks View -->
+          <div id="tabBawsaq" style="display: none; flex-direction: column; gap: 0.6rem;">
+            <div style="font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 0.9rem;">
+              BAWSAQ INDEX (VICE CITY EXCHANGE)
+            </div>
+            <div id="stocksContainer" style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <!-- Dynamic Stocks -->
+            </div>
+          </div>
+
+          <!-- 3. Leonida Reelz View -->
+          <div id="tabReelz" style="display: none; flex-direction: column; gap: 0.75rem;">
+            <div style="font-family: var(--font-display); font-weight: 700; color: var(--vc-pink); font-size: 0.9rem;">
+              🔥 TRENDING IN LEONIDA
+            </div>
+            <div id="reelzContainer" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <!-- Dynamic Viral Clips -->
+            </div>
+          </div>
+
+          <!-- 4. Maze Bank View -->
+          <div id="tabBank" style="display: none; flex-direction: column; gap: 0.75rem;">
+            <div style="background: #1e293b; border-radius: 12px; padding: 1rem; text-align: center;">
+              <div style="font-size: 0.75rem; color: #94a3b8;">MAZE BANK CHECKING</div>
+              <div id="bankBalanceDisplay" style="font-size: 1.6rem; font-weight: 700; font-family: var(--font-mono); color: var(--vc-green); margin-top: 0.3rem;">
+                $48,920.50
+              </div>
+              <div style="font-size: 0.7rem; color: #64748b; margin-top: 0.2rem;">Account: Lucia & Jason Caminos-Duval</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+              <button class="btn-action" onclick="depositLaunderedCash()">💵 Deposit $10k</button>
+              <button class="btn-action" onclick="alert('Wire transfer of $5,000 sent to Port Gellhorn safehouse.')">💸 Wire Safehouse</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // System State Variables
+    let currentProtagonist = 'Lucia';
+    let wantedStars = 0;
+    let sensoryFocusActive = false;
+    let witnessTimerInterval = null;
+    let currentSpeed = 128;
+    let currentGear = 4;
+    let baseSurfaceGrip = 1.0;
+    let currentTraction = 1.0;
+    let isTireBlown = false;
+    let duffleBagCash = 245000;
+    let mazeBankBalance = 48920.50;
+    let companionAmmo = 180;
+    let stashedTrunkCount = 3;
+    let syncTakedownInterval = null;
+
+    // Stock Data Cache
+    const STOCKS = [
+      { ticker: 'FRT', name: 'Fruit Computers', price: 232.40, change: +1.45 },
+      { ticker: 'TNK', name: 'Tinkle Telecom', price: 19.85, change: -0.80 },
+      { ticker: 'BTB', name: 'BitBull Crypto', price: 63800.0, change: +4.80 },
+      { ticker: 'LFK', name: 'Lifeinvader', price: 540.20, change: +2.10 },
+      { ticker: 'AMM', name: 'Ammu-Nation', price: 478.90, change: +3.60 }
+    ];
+
+    // Initialize Simulator
+    window.addEventListener('DOMContentLoaded', () => {
+      renderStars();
+      renderStocks();
+      performEyefindSearch();
+      renderReelz();
+      startLiveTicker();
+    });
+
+    // Protagonist Switching
+    function switchCharacter(name) {
+      currentProtagonist = name;
+      document.getElementById('btnLucia').classList.toggle('active', name === 'Lucia');
+      document.getElementById('btnJason').classList.toggle('active', name === 'Jason');
+      document.getElementById('companionStateBadge').innerText = `ACTIVE: ${name.toUpperCase()}`;
+
+      const partner = (name === 'Lucia') ? 'Jason' : 'Lucia';
+      const badge = document.getElementById('companionPostureBadge');
+      if (badge) badge.innerText = `FOLLOWING: ${partner.toUpperCase()} (3.5m)`;
+
+      logRadio(`Player swapped active control to ${name}. Partner (${partner}) switched to Tactical Companion AI.`);
+    }
+
+    // Companion Tactical Commands Engine
+    function issueCompanionCommand(cmd) {
+      const badge = document.getElementById('companionPostureBadge');
+      const ammoEl = document.getElementById('companionAmmoText');
+      const syncWrap = document.getElementById('syncTakedownProgressWrap');
+      const syncTimer = document.getElementById('syncTakedownTimerDisplay');
+      const syncBar = document.getElementById('syncTakedownBar');
+
+      if (syncTakedownInterval) {
+        clearInterval(syncTakedownInterval);
+        syncTakedownInterval = null;
+        if (syncWrap) syncWrap.style.display = 'none';
+      }
+
+      if (cmd === 'Move to Ping') {
+        if (badge) {
+          badge.innerText = 'MOVING TO COVER (12m)';
+          badge.style.color = 'var(--vc-cyan)';
+        }
+        logRadio(`[Tactical Comms] ${currentProtagonist}: "Move to that barrier and watch our flank!"`);
+        setTimeout(() => {
+          if (badge) {
+            badge.innerText = 'IN LOW COVER (OCCLUDED)';
+            badge.style.color = 'var(--vc-cyan)';
+          }
+          logRadio(`[Tactical Comms] Companion: "In position, good sightlines on hostiles."`);
+        }, 1600);
+      } else if (cmd === 'Suppressive Fire') {
+        if (badge) {
+          badge.innerText = 'IN COVER (SUPPRESSIVE FIRE)';
+          badge.style.color = 'var(--vc-amber)';
+        }
+        companionAmmo = Math.max(0, companionAmmo - 15);
+        if (ammoEl) ammoEl.innerText = `${companionAmmo} / 180 (5.56 NATO)`;
+        logRadio(`[Tactical Comms] ${currentProtagonist}: "Lay down suppressive fire on that corner!"`);
+        setTimeout(() => {
+          logRadio(`[Tactical Comms] Companion: "Pinning them down with sustained bursts! Move now!"`);
+        }, 600);
+      } else if (cmd === 'Sync Takedown') {
+        if (badge) {
+          badge.innerText = 'SYNC TAKEDOWN (LOCKING)';
+          badge.style.color = 'var(--vc-pink)';
+        }
+        if (syncWrap) syncWrap.style.display = 'block';
+        let timeLeft = 3.0;
+        if (syncTimer) syncTimer.innerText = timeLeft.toFixed(1) + 's';
+        if (syncBar) syncBar.style.width = '100%';
+        logRadio(`[Tactical Comms] ${currentProtagonist}: "Hostile locked. Stand by on three..."`);
+
+        syncTakedownInterval = setInterval(() => {
+          timeLeft -= 0.1;
+          if (timeLeft <= 0) {
+            clearInterval(syncTakedownInterval);
+            syncTakedownInterval = null;
+            if (syncWrap) syncWrap.style.display = 'none';
+            if (badge) {
+              badge.innerText = 'TAKEDOWN EXECUTED';
+              badge.style.color = 'var(--vc-green)';
+            }
+            logRadio(`[Tactical Comms] Companion: "Target neutralized silently. Sector secure."`);
+            setTimeout(() => {
+              if (badge) {
+                badge.innerText = 'FOLLOWING (3.5m)';
+                badge.style.color = 'var(--vc-cyan)';
+              }
+            }, 2000);
+          } else {
+            if (syncTimer) syncTimer.innerText = timeLeft.toFixed(1) + 's';
+            if (syncBar) syncBar.style.width = `${(timeLeft / 3.0) * 100}%`;
+          }
+        }, 100);
+      } else if (cmd === 'Breach & Clear') {
+        if (badge) {
+          badge.innerText = 'STACKING AT DOORWAY';
+          badge.style.color = 'var(--vc-purple)';
+        }
+        logRadio(`[Tactical Comms] ${currentProtagonist}: "Breach and clear on my go!"`);
+        setTimeout(() => {
+          if (badge) {
+            badge.innerText = 'ROOM BREACHED & SECURED';
+            badge.style.color = 'var(--vc-green)';
+          }
+          logRadio(`[Tactical Comms] Companion: "Flashbang out! Room breached and clear!"`);
+          setTimeout(() => {
+            if (badge) {
+              badge.innerText = 'FOLLOWING (3.5m)';
+              badge.style.color = 'var(--vc-cyan)';
+            }
+          }, 2500);
+        }, 1800);
+      }
+    }
+
+    // Sensory Focus Slomo
+    function toggleSensoryFocus() {
+      sensoryFocusActive = !sensoryFocusActive;
+      document.getElementById('viewportStage').classList.toggle('sensory-focus-active', sensoryFocusActive);
+      document.getElementById('btnSensoryFocus').style.background = sensoryFocusActive ? 'var(--vc-cyan)' : 'transparent';
+      document.getElementById('btnSensoryFocus').style.color = sensoryFocusActive ? '#000' : 'var(--vc-cyan)';
+      logRadio(`Sensory Focus (Time Dilation 0.35x) ${sensoryFocusActive ? 'ACTIVATED' : 'DEACTIVATED'}`);
+    }
+
+    // Wanted Heat System
+    function setWanted(stars) {
+      wantedStars = Math.max(0, Math.min(6, stars));
+      renderStars();
+    }
+
+    function renderStars() {
+      const container = document.getElementById('wantedStarsContainer');
+      const stars = container.getElementsByClassName('star-icon');
+      for (let i = 0; i < stars.length; i++) {
+        if (i < wantedStars) {
+          stars[i].classList.add('active-star');
+        } else {
+          stars[i].classList.remove('active-star');
+        }
+      }
+    }
+
+    function commitCrime(crimeName, starsDelta) {
+      setWanted(wantedStars + starsDelta);
+      logRadio(`🚨 10-99 DISPATCH: ${crimeName} reported near Ocean Drive! Wanted level: ${wantedStars} Stars!`);
+      triggerWitnessCall();
+    }
+
+    function clearWanted() {
+      setWanted(0);
+      logRadio(`VCPD Dispatch: Suspect lost visual contact. Heat cooled down.`);
+    }
+
+    // Witness 911 Call Simulation
+    function triggerWitnessCall() {
+      const banner = document.getElementById('witnessAlertBanner');
+      banner.style.display = 'block';
+      let remaining = 6.0;
+      document.getElementById('witnessTimer').innerText = remaining.toFixed(1);
+
+      if (witnessTimerInterval) clearInterval(witnessTimerInterval);
+      witnessTimerInterval = setInterval(() => {
+        remaining -= 0.1;
+        if (remaining <= 0) {
+          clearInterval(witnessTimerInterval);
+          banner.style.display = 'none';
+          logRadio(`Civilian 911 call connected! Patrol units dispatched to exact coordinates.`);
+          setWanted(wantedStars + 1);
+        } else {
+          document.getElementById('witnessTimer').innerText = remaining.toFixed(1);
+        }
+      }, 100);
+    }
+
+    function interceptWitness() {
+      if (witnessTimerInterval) clearInterval(witnessTimerInterval);
+      document.getElementById('witnessAlertBanner').style.display = 'none';
+      logRadio(`Witness intimidated at gunpoint! 911 call cancelled successfully.`);
+    }
+
+    // Vehicle Dynamics & Grip
+    function setSurface(name, grip) {
+      baseSurfaceGrip = grip;
+      currentTraction = isTireBlown ? Math.max(0.20, grip * 0.5) : grip;
+      document.getElementById('surfaceGripTag').innerText = `${currentTraction.toFixed(2)}x (${name}${isTireBlown ? ' - PUNCTURED' : ''})`;
+      document.getElementById('currentWeatherSub').innerText = `CLIMATE: TROPICAL • 86°F • ${name.toUpperCase()}`;
+      logRadio(`Vehicle traction updated to: ${name} (${currentTraction.toFixed(2)}x grip)`);
+    }
+
+    function blowTire() {
+      if (isTireBlown) {
+        logRadio(`⚠️ Tire is already shredded! Driving on sparks and bare rim.`);
+        return;
+      }
+      isTireBlown = true;
+      currentTraction = Math.max(0.20, baseSurfaceGrip * 0.5);
+      document.getElementById('surfaceGripTag').innerText = `${currentTraction.toFixed(2)}x (PUNCTURED TIRE - SPARKS)`;
+      logRadio(`⚠️ Front Right Tire Blown! Grip halved to ${currentTraction.toFixed(2)}x.`);
+    }
+
+    function repairTire() {
+      isTireBlown = false;
+      currentTraction = baseSurfaceGrip;
+      document.getElementById('surfaceGripTag').innerText = `${currentTraction.toFixed(2)}x (TIRE REPLACED)`;
+      logRadio(`🔧 Quick Pitstop: Tire replaced with fresh high-performance rubber.`);
+    }
+
+    function triggerVehicleTheft() {
+      logRadio(`Started electronic OBD-II rolling code bypass on Pegassi Torero XO (4.2s)...`);
+      setTimeout(() => {
+        logRadio(`Vehicle immobilizer bypassed! V12 Engine roaring.`);
+      }, 4200);
+    }
+
+    // Radio Dispatch Logging
+    function logRadio(msg) {
+      const logBox = document.getElementById('policeRadioLog');
+      const time = new Date().toTimeString().split(' ')[0];
+      const div = document.createElement('div');
+      div.className = 'radio-entry';
+      div.innerHTML = `<span class="time">[${time}]</span> <span>${msg}</span>`;
+      logBox.prepend(div);
+    }
+
+    // Phone Navigation
+    function switchPhoneTab(tab, evt) {
+      ['eyefind', 'bawsaq', 'reelz', 'bank'].forEach(t => {
+        const el = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (el) el.style.display = (t === tab) ? 'flex' : 'none';
+      });
+
+      const buttons = document.querySelectorAll('.phone-tab-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      if (evt && evt.currentTarget) {
+        evt.currentTarget.classList.add('active');
+      }
+    }
+
+    // Eyefind Live Search Simulation
+    function quickSearch(q) {
+      document.getElementById('searchQueryInput').value = q;
+      performEyefindSearch();
+    }
+
+    function performEyefindSearch() {
+      const q = document.getElementById('searchQueryInput').value || 'Vice City';
+      const container = document.getElementById('searchResultsContainer');
+      container.innerHTML = '<div style="font-size: 0.75rem; color: var(--text-muted);">Searching Eyefind 2.0 gateway...</div>';
+
+      setTimeout(() => {
+        container.innerHTML = `
+          <div class="search-result-card">
+            <a href="#" class="result-title">LEONIDA NEWS: "${q.toUpperCase()}" Sparks Wild Police Chase on Ocean Drive</a>
+            <div class="result-snippet">Eyewitnesses report sports car drifting through Biscayne Boulevard with armed couple escaping VCPD cruisers.</div>
+            <div class="result-author">By Weazel News 6 • Market Impact: +2.4%</div>
+          </div>
+          <div class="search-result-card">
+            <a href="#" class="result-title">Ammu-Nation Daily Deals: Premium Tactical Gear for "${q}"</a>
+            <div class="result-snippet">Protect your home, superyacht, or swamp airboat with high-caliber armor-piercing rounds. Buy 1 get 1 grenade free.</div>
+            <div class="result-author">Sponsored by Ammu-Nation Vice City</div>
+          </div>
+          <div class="search-result-card">
+            <a href="#" class="result-title">Bleeter Trending Topic: Is "${q}" the new Florida meme?</a>
+            <div class="result-snippet">Over 180,000 bleets and video clips uploaded in the last hour. Watch real-time reactions on Leonida Reelz.</div>
+            <div class="result-author">Bleeter Buzz Analytics</div>
+          </div>
+        `;
+      }, 300);
+    }
+
+    // BAWSAQ Stocks Renderer
+    function renderStocks() {
+      const container = document.getElementById('stocksContainer');
+      container.innerHTML = '';
+      STOCKS.forEach(stock => {
+        const isPos = stock.change >= 0;
+        const row = document.createElement('div');
+        row.className = 'stock-ticker-row';
+        row.innerHTML = `
+          <div>
+            <div class="stock-symbol">${stock.ticker}</div>
+            <div class="stock-name">${stock.name}</div>
+          </div>
+          <div>
+            <div class="stock-price">$${stock.price.toFixed(2)}</div>
+            <div class="stock-change ${isPos ? 'positive' : 'negative'}">
+              ${isPos ? '▲' : '▼'} ${stock.change.toFixed(2)}%
+            </div>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    // Reelz Feed Renderer
+    function renderReelz() {
+      const container = document.getElementById('reelzContainer');
+      container.innerHTML = `
+        <div class="reel-post">
+          <div class="reel-video-placeholder" style="background-image: url('https://images.unsplash.com/photo-1514565131-fce0801e5785?w=500&auto=format&fit=crop&q=60');">
+            <span style="background: rgba(0,0,0,0.6); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.65rem; color: #fff;">▶ 2.8M Views</span>
+          </div>
+          <div class="reel-caption">
+            <strong>@LeonidaMan:</strong> Walking my 14ft gator into the 24/7 store for beef jerky #ViceLife 🐊
+          </div>
+          <div class="reel-meta">
+            <span>❤️ 612K Likes</span>
+            <span>🎵 Tropical Heatwave FM</span>
+          </div>
+        </div>
+
+        <div class="reel-post">
+          <div class="reel-video-placeholder" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&auto=format&fit=crop&q=60');">
+            <span style="background: rgba(0,0,0,0.6); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.65rem; color: #fff;">▶ 5.9M Views</span>
+          </div>
+          <div class="reel-caption">
+            <strong>@ViceDashcam:</strong> Twin turbo Cheetah doing 220mph past three police cruisers! 🔥
+          </div>
+          <div class="reel-meta">
+            <span>❤️ 1.2M Likes</span>
+            <span>🎵 Street Runnin'</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // Live Ticker Loop
+    function startLiveTicker() {
+      setInterval(() => {
+        // Micro fluctuation for speedometer
+        const delta = (Math.random() * 4 - 2);
+        currentSpeed = Math.max(80, Math.min(240, Math.round(currentSpeed + delta)));
+        const speedEl = document.getElementById('speedDisplay');
+        if (speedEl) speedEl.innerText = currentSpeed;
+
+        // Fluctuations for stocks
+        STOCKS.forEach(s => {
+          s.price += (Math.random() * 0.4 - 0.2);
+          s.change += (Math.random() * 0.1 - 0.05);
+        });
+        renderStocks();
+      }, 2000);
+    }
+
+    // Maze Bank & Duffle Bag Economy Synchronization
+    function depositLaunderedCash() {
+      if (duffleBagCash < 10000) {
+        alert("Not enough physical cash remaining in duffle bag to deposit!");
+        return;
+      }
+      duffleBagCash -= 10000;
+      mazeBankBalance += 10000;
+
+      const duffleEl = document.getElementById('lootCashLabel');
+      if (duffleEl) duffleEl.innerText = `$${duffleBagCash.toLocaleString()} (Duffle Bag)`;
+
+      const bankEl = document.getElementById('bankBalanceDisplay');
+      if (bankEl) bankEl.innerText = `$${mazeBankBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+      logRadio(`Maze Bank ATM: $10,000 cash laundered. Duffle balance: $${duffleBagCash.toLocaleString()}`);
+    }
+
+    // Weapon Selection & Trunk Synchronization
+    function selectWeapon(w, el) {
+      document.querySelectorAll('.weapon-slot-item').forEach(item => item.classList.remove('equipped'));
+      if (el) el.classList.add('equipped');
+      logRadio(`Equipped active weapon: ${w}`);
+    }
+
+    function stashInTrunk() {
+      stashedTrunkCount += 1;
+      const tag = document.querySelector('.weapon-slot-item:last-child .weapon-ammo-tag');
+      if (tag) tag.innerText = `${stashedTrunkCount} Stashed`;
+      logRadio(`Trunk Armory opened: Weapon stashed into Pegassi Torero XO. Total stashed: ${stashedTrunkCount}.`);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+@import 'tailwindcss';
+
+/* Enable Tailwind dark mode with class strategy */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  font-family:
+    'Jost',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+div,
+p,
+span,
+a,
+button,
+input,
+textarea,
+select,
+option,
+label,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family:
+    'Jost',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    sans-serif;
+}
+
+:root,
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* START OF SCROLLBAR STYLING */
+*::-webkit-scrollbar {
+  width: 3px;
+  padding: 5px;
+}
+
+/* Track */
+*::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+}
+
+/* Handle */
+*::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: 360px;
+}
+
+/* Handle on hover */
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-thumb-hover);
+  cursor: pointer;
+}
+/* END OF SCROLLBAR STYLING */

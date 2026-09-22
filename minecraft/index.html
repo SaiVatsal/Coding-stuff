@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>3D Minecraft – game3d.html</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body{margin:0;overflow:hidden;background:#111;cursor:crosshair;font-family:sans-serif}
+  #hud{position:fixed;top:10px;left:10px;color:#fff;font-size:13px;pointer-events:none;z-index:99}
+  #settingsBtn{position:fixed;top:10px;right:10px;width:32px;height:32px;border:none;background:#444;color:#fff;font-size:18px;cursor:pointer;border-radius:4px;z-index:99}
+  #fps{position:fixed;top:10px;right:50px;font-size:12px;color:#aaa}
+</style>
+</head>
+<body>
+
+<!-- HUD -->
+<div id="hud">
+  <div>WASD ⎜ Move  •  Shift ⎜ Sprint  •  Space ⎜ Jump</div>
+  <div>Left‑Click ⎜ Break/Attack  •  Right‑Click ⎜ Place/Use</div>
+  <div>E ⎜ Inventory  •  Q ⎜ Drop  •  F3 ⎜ Debug</div>
+</div>
+<button id="settingsBtn">⚙</button>
+<div id="fps"></div>
+
+<!-- Three.js from CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.164.0/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+
+<script>
+// ==================== ENGINE SETUP ====================
+const scene    = new THREE.Scene();
+const camera   = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 200);
+camera.position.set(0, 1.6, 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias:true, canvas: undefined });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.shadowMap.enabled = true;        // enable shadows
+renderer.shadowMap.type      = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+// Controls (pointer‑lock FPS)
+const PointerLockControls = new THREE.PointerLockControls( camera, document.body );
+scene.add( PointerLockControls.getObject() );
+const canMove = false;
+document.body.addEventListener('click',()=> PointerLockControls.lock());
+document.addEventListener('pointerlockchange',()=> canMove = document.pointerLockElement===document.body);
+
+// ------------------- Keyboard -------------------
+const keys = {forward:false,backward:false,left:false,right:false,jump:false,sprint:false};
+window.addEventListener('keydown',e=>{
+  if(!canMove)return;
+  switch(e.code){
+    case 'KeyW': keys.forward=true; break;
+    case 'KeyS': keys.backward=true; break;
+    case 'KeyA': keys.left=true; break;
+    case 'KeyD': keys.right=true; break;
+    case 'Space': if(keys.jump===false){keys.jump=true;} break;
+    case 'ShiftLeft': keys.sprint=true; break;
+  }
+});
+window.addEventListener('keyup',e=>{
+  switch(e.code){
+    case 'KeyW': keys.forward=false; break;
+    case 'KeyS': keys.backward=false; break;
+    case 'KeyA': keys.left=false; break;
+    case 'KeyD': keys.right=false; break;
+    case 'Space': keys.jump=false; break;
+    case 'ShiftLeft': keys.sprint=false; break;
+  }
+});
+
+// ------------------- FPS counter -------------------
+let fpsInterval=0, fpsNow=0, fpsLast=performance.now();
+function updateFPS(){
+  fpsNow=performance.now();
+  if(fpsNow-fpsLast>1000){
+    document.getElementById('fps').innerText=`FPS: ${Math.round(1000/(fpsNow-fpsLast))}`;
+    fpsLast=fpsNow;
+  }
+  requestAnimationFrame(updateFPS);
+}
+updateFPS();
+
+// ------------------- Resize -------------------
+window.addEventListener('resize',()=>{
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+});
+
+// ==================== SKY & LIGHT ====================
+
+// Heads-up ambient light (soft)
+const hemi=new THREE.HemisphereLight(0x88ccee,0x444488,0.6);
+scene.add(hemi);
+
+// Directional light = sun
+const dirLight=new THREE.DirectionalLight(0xffffff,1);
+dirLight.position.set(50,80,50);
+dirLight.castShadow=true;
+dirLight.shadow.mapSize.width=2048;
+dirLight.shadow.mapSize.height=2048;
+dirLight.shadow.camera.near=0.5;
+dirLight.shadow.camera.far=100;
+dirLight.shadow.radius=4;
+scene.add(dirLight);
+
+// Sun disc (visual)
+const sunGeo=new THREE.SphereGeometry(10,32,32);
+const sunMat=new THREE.MeshBasicMaterial({color:0xffaa00,transparent:true,opacity:0.7});
+const sunMesh=new THREE.Mesh(sunGeo,sunMat);
+sunMesh.position.set(40,40,40);
+// we’ll move sun across sky each frame
+
+// ==================== PROCEDURAL SKY (day/night) ====================
+function updateSky(dt){
+  // time of day 0‑1 (0 = midnight, 0.5 = noon)
+  const time=(performance.now()/1000/60)%24/24; // slow cycle
+  // Interpolate hemi color
+  const nightColor=new THREE.Color().setHSL(0.6,0.2,0.2);
+  const dayColor =new THREE.Color().setHSL(0.095,0.6,0.7);
+  const lerp=Math.sin(time*Math.PI); // smooth step
+  hemi.color.lerpVectors(nightColor,dayColor,lerp);
+  hemi.color.convertLinearToSRGB();
+  hemi.intensity=0.5+0.5*lerp;
+
+  // Sun position & visibility
+  const sunTheta=(time*2-Math.PI)*Math.PI; // from -π to π
+  const sunPhi=Math.acos(-2*time+1)*0.5; // elevation 0→π
+  sunMesh.position.set(40*Math.cos(sunTheta)*Math.sin(sunPhi),
+                       40*Math.sin(sunPhi),
+                       40*Math.sin(sunTheta)*Math.sin(sunPhi));
+  sunMesh.visible = time>0.1 && time<0.9; // hide during night-ish
+  dirLight.position.copy(sunMesh.position).multiplyScalar(5);
+}
+ // call each frame
+
+// ==================== PROCEDURAL TEXTURES (canvas) ====================
+function makeGrassTexture(){
+  const canvas=document.createElement('canvas'); canvas.width=16; canvas.height=16;
+  const ctx=canvas.getContext('2d');
+  // dirt
+  ctx.fillStyle='#8b5a2b'; ctx.fillRect(0,0,16,16);
+  // grass top stripe
+  ctx.fillStyle='#7cfc00'; ctx.fillRect(0,0,16,4);
+  // small dirt grain noise
+  for(let i=0;i<200;i++){
+    const x=Math.random()*16, y=Math.random()*16+4;
+    ctx.fillStyle=`rgba(139,90,43,${Math.random()*0.5})`;
+    ctx.fillRect(x,y,Math.random()*2,Math.random()*2);
+  }
+  return new THREE.CanvasTexture(canvas);
+}
+function makeStoneTexture(){
+  const canvas=document.createElement('canvas'); canvas.width=16; canvas.height=16;
+  const ctx=canvas.getContext('2d');
+  const imgData=ctx.createImageData(16,16);
+  for(let i=0;i<imgData.data.length;i+=4){
+    const c=Math.random()*30+100; // gray range
+    imgData.data[i]=c; imgData.data[i+1]=c; imgData.data[i+2]=c; imgData.data[i+3]=255;
+  }
+  ctx.putImageData(imgData,0,0);
+  return new THREE.CanvasTexture(canvas);
+}
+function makeWoodTexture(side){
+  const c=side==='log'?0x8b4513:0xdeb70b;
+  const canvas=document.createElement('canvas'); canvas.width=16; canvas.height=16;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle= THREE.colorToString(c);
+  ctx.fillRect(0,0,16,16);
+  // yearly rings noise
+  for(let i=0;i<100;i++){
+    const x=Math.random()*14+1, y=Math.random()*14+1;
+    ctx.fillStyle=`rgba(0,0,0,${Math.random()*0.3})`;
+    ctx.fillRect(x,y,Math.random()*2,Math.random()*2);
+  }
+  return new THREE.CanvasTexture(canvas);
+}
+function makeLeafTexture(){
+  const canvas=document.createElement('canvas'); canvas.width=16; canvas.height=16;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#70ba4a';
+  ctx.fillRect(0,0,16,16);
+  // vein noise
+  ctx.strokeStyle='rgba(34,139,34,0.5)';
+  for(let i=0;i<10;i++){
+    const x=Math.random()*12, y=Math.random()*12;
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+Math.random()*6,y+Math.random()*6);
+    ctx.stroke();
+  }
+  return new THREE.CanvasTexture(canvas);
+}
+const grassTex  = makeGrassTexture();
+const stoneTex  = makeStoneTexture();
+const woodTex   = makeWoodTexture('log');
+const leafTex   = makeLeafTexture();
+
+// материалы с нормалькой (fake)
+function makeGrassMat(){ const m=new THREE.MeshStandardMaterial({map:grassTex,roughness:0.4,metalness:0.05}); m.normalMap=new THREE.Texture(); m.normalMap.format=THREE.RGBAFormat; return m;}
+function makeStoneMat(){ const m=new THREE.MeshStandardMaterial({map:stoneTex,roughness:0.8,metalness:0.2}); }
+function makeWoodMat(){ const m=new THREE.MeshStandardMaterial({map:woodTex,roughness:0.6,metalness:0.1}); }
+function makeLeafMat(){ const m=new THREE.MeshStandardMaterial({map:leafTex,transparent:true,opacity:0.8,side:THREE.DoubleSide}); }
+
+// ==================== SIMPLE CHUNK WORLD ====================
+const WORLD_SIZE=20; // blocks each side
+const MAX_HEIGHT=64;
+const world=new Array(WORLD_SIZE).fill().map(()=>new Array(WORLD_SIZE).fill().map(()=>[]));
+
+function genHeight(x,z){
+  // simple perlin-like ridge (deterministic)
+  const nx=x/WORLD_SIZE, nz=z/WORLD_SIZE;
+  const val=Math.sin(nx*Math.PI*2)*Math.cos(nz*Math.PI*2)*0.5+0.5;
+  return Math.floor(MAX_HEIGHT*val*0.8+MAX_HEIGHT*0.2);
+}
+function buildWorld(){
+  for(let x=0;x<WORLD_SIZE;x++){
+    for(let z=0;z<WORLD_SIZE;z++){
+      const h=genHeight(x,z);
+      for(let y=0;y<=h;y++){
+        world[x][z].push({x,y,z,type:y===h?'grass':(y<h-1?'stone':'dirt')});
+      }
+    }
+  }
+  createMeshes();
+}
+function createMeshes(){
+  // clean old meshes
+  while(scene.children.length>3){ // keep sky/hemi/ambient
+    const child=scene.children[scene.children.length-1];
+    if(child instanceof THREE.Mesh){
+      child.geometry.dispose();
+      child.material.dispose();
+      scene.remove(child);
+    }
+  }
+  for(let x=0;x<WORLD_SIZE;x++){
+    for(let z=0;z<WORLD_SIZE;z++){
+      for(const block of world[x][z]){
+        const {x:x0,y:y0,z:z0,type}=block;
+        const geo=new THREE.BoxGeometry(1,1,1);
+        let mat;
+        switch(type){
+          case 'grass':   mat=makeGrassMat();   break;
+          case 'dirt':    mat=makeStoneMat();   // reuse stone for simplicity
+          case 'stone':   mat=makeStoneMat();   break;
+          case 'log':     mat=makeWoodMat();    break;
+          case 'leaf':    mat=makeLeafMat();    break;
+          default:        mat=new THREE.MeshStandardMaterial({color:0x555555});
+        }
+        const mesh=new THREE.Mesh(geo,mat);
+        mesh.position.set(x0+0.5, y0+0.5, z0+0.5);
+        mesh.castShadow=true;
+        mesh.receiveShadow=true;
+        scene.add(mesh);
+      }
+    }
+  }
+}
+buildWorld();
+
+// ==================== PLAYER COLLISION STUB ====================
+const playerBox=new THREE.BoxGeometry(0.5,1.8,0.5);
+const playerMat=new THREE.MeshBasicMaterial({visible:false});
+const playerMesh=new THREE.Mesh(playerBox,playerMat);
+scene.add(playerMesh);
+
+const moveSpeed=0.15;
+const velocity=new THREE.Vector3();
+let canJump=false;
+
+function movePlayer(dt){
+  if(!canMove)return;
+  const cam= camera; // already FPS oriented
+  const forward=new THREE.Vector3(0,0,-1);
+  forward.applyQuaternion(camera.quaternion);
+  const right=new THREE.Vector3(1,0,0);
+  right.applyQuaternion(camera.quaternion);
+
+  const speed=keys.sprint?moveSpeed*1.5:moveSpeed;
+  const move=new THREE.Vector3();
+  if(keys.forward) move.z-=speed;
+  if(keys.backward) move.z+=speed;
+  if(keys.left) move.x-=speed;
+  if(keys.right) move.x+=speed;
+
+  // rotate move into camera space
+  move.applyQuaternion(camera.quaternion);
+
+  // push motion
+  velocity.x=(move.x-velocity.x)*0.1+velocity.x;
+  velocity.z=(move.z-velocity.z)*0.1+velocity.z;
+  playerMesh.position.add(velocity.clone().multiplyScalar(dt));
+
+  // simple ground check (y offset)
+  const checkPos=new THREE.Vector3(playerMesh.position.x, playerMesh.position.y-0.9, playerMesh.position.z);
+  const ray=new THREE.Raycaster(checkPos,new THREE.Vector3(0,-1,0),0,0.6);
+  const hits=ray.intersectObjects(scene.children,true);
+  if(hits.length&&hits[0].distance<0.5){
+    canJump=true;
+    velocity.y=0;
+  }else{
+    canJump=false;
+    velocity.y-=0.08*dt; // gravity
+  }
+  if(keys.jump&&canJump){velocity.y=0.4; canJump=false;}
+}
+
+// ==================== BLOCK INTERACTION ====================
+const raycaster = new THREE.Raycaster();
+const tempMatrix = new THREE.Matrix4();
+
+// hotbar selection
+let selected=0; // index into hotbar
+const hotbar=['grass','dirt','stone','wood','leaf']; // simple palette
+
+// place/break handling
+const INTERACT_DIST=5;
+document.addEventListener('mousedown',e=>{
+  if(e.button===0){ // break
+    raycaster.setFromMouse(new THREE.Vector2((e.clientX/window.innerWidth)*2-1, -(e.clientY/window.innerHeight)*2+1), camera);
+    const dir=raycaster.ray.direction.clone().multiplyScalar(INTERACT_DIST);
+    const origin=raycaster.ray.origin.clone().add(dir);
+    // find intersected block
+    scene.traverse(obj=>{
+      if(obj.isMesh){
+        obj.raycast(raycaster); // just to trigger selection? Actually we do manual below
+      }
+    });
+    // simple block pick
+    const intersect=raycaster.intersectObjects(scene.children,true)[0];
+    if(intersect){
+      const mesh=intersect.object;
+      // determine block coords
+      const pos=mesh.position.clone().sub(new THREE.Vector3(0.5,0.5,0.5));
+      const bx=Math.floor(pos.x),by=Math.floor(pos.y),bz=Math.floor(pos.z);
+      // remove from world array if exists
+      for(let x=0;x<WORLD_SIZE;x++){
+        for(let z=0;z<WORLD_SIZE;z++){
+          const arr=world[x][z];
+          const idx=arr.findIndex(b=>Math.floor(b.x)==bx&&Math.floor(b.y)==by&&Math.floor(b.z)==bz);
+          if(idx!==-1){
+            arr.splice(idx,1);
+            // optionally add to inventory; omitted for brevity
+            scene.remove(mesh);
+            mesh.geometry.dispose();
+            mesh.material.dispose();
+            createMeshes(); // refresh
+            return;
+          }
+        }
+      }
+    }
+  }else if(e.button===2){ // place
+    // find placement position in front of player
+    const dir=new THREE.Vector3(0,0,-1);
+    dir.applyQuaternion(camera.quaternion);
+    const origin=camera.position.clone();
+    const placePos=origin.clone().add(dir.multiplyScalar(1.1));
+    const bx=Math.floor(placePos.x), by=Math.floor(placePos.y), bz=Math.floor(placePos.z);
+    // sanity: keep inside world bounds
+    if(bx>=0&&bx<WORLD_SIZE&&bz>=0&&bz<WORLD_SIZE&&by>=0){
+      const type=hotbar[selected%hotbar.length];
+      world[bx][bz].push({x:bx,y:by,z:bz,type});
+      const geo=new THREE.BoxGeometry(1,1,1);
+      let mat;
+      switch(type){
+        case 'grass':   mat=makeGrassMat();   break;
+        case 'dirt':    mat=makeStoneMat();   break;
+        case 'stone':   mat=makeStoneMat();   break;
+        case 'log':     mat=makeWoodMat();    break;
+        case 'leaf':    mat=makeLeafMat();    break;
+        default:        mat=new THREE.MeshStandardMaterial({color:0x555555});
+      }
+      const mesh=new THREE.Mesh(geo,mat);
+      mesh.position.set(bx+0.5,by+0.5,bz+0.5);
+      mesh.castShadow=true;
+      mesh.receiveShadow=true;
+      scene.add(mesh);
+    }
+  }
+});
+
+// ==================== UI TOGGLES ====================
+document.getElementById('settingsBtn').addEventListener('click',()=>{
+  alert('Settings placeholder.\nTabs will come: Graphics, Controls, Gameplay, Audio.\nYou can expand the dat.GUI or build an HTML overlay.');
+});
+
+// ==================== ANIMATION LOOP ====================
+const clock=new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const dt=clock.getDelta();
+
+  updateSky(dt);
+  movePlayer(dt);
+
+  // rotate sun slowly if you want
+  // sunMesh.rotation.y+=0.01;
+
+  renderer.render(scene,camera);
+  updateFPS();
+}
+animate();
+
+// ==================== DEBUG OVERLAY (F3) ====================
+window.addEventListener('keydown',e=>{
+  if(e.code=== 'F3'){
+    const debug=document.createElement('div');
+    debug.style.position='fixed';debug.style.bottom='0';debug.style.left='0';debug.style.color='white';debug.style.background='rgba(0,0,0,0.5)';debug.style.padding='8px';debug.style.fontFamily='monospace';
+    debug.innerHTML=`Pos: ${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)}<br>FPS: ${Math.round(1/(performance.now()-fpsLast))}`;
+    document.body.appendChild(debug);
+  }
+});
+</script>
+
+</body>
+</html>

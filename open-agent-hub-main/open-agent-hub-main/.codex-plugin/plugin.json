@@ -1,0 +1,35 @@
+{
+    "name": "open-agent-hub",
+    "description": "Unified capability management center for Skills, Agents, and Commands.",
+    "version": "3.0.0",
+    "author": {
+        "name": "guanyang",
+        "email": "guanyangsunlight@gmail.com",
+        "url": "https://github.com/guanyang"
+    },
+    "homepage": "https://github.com/guanyang/open-agent-hub",
+    "repository": "https://github.com/guanyang/open-agent-hub",
+    "license": "MIT",
+    "keywords": [
+        "agent",
+        "skills",
+        "cli",
+        "hub",
+        "codex",
+        "open-agent-hub"
+    ],
+    "skills": "./skills/",
+    "mcpServers": "./.mcp.json",
+    "interface": {
+        "displayName": "Open Agent Hub",
+        "shortDescription": "Unified capability management center for Skills, Agents, and Commands.",
+        "longDescription": "A unified capability center mapping, activating, and managing Skills, custom AI Agents, and commands for Codex.",
+        "developerName": "guanyang",
+        "category": "Productivity",
+        "capabilities": ["Read", "Write"],
+        "websiteURL": "https://github.com/guanyang/open-agent-hub",
+        "brandColor": "#8A2BE2",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/logo.png"
+    }
+}

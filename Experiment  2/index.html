@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KL Page - Sai Vatsal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Styling */
+        header {
+            background-color: #0056b3;
+            color: #ffffff;
+            text-align: center;
+            padding: 24px 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        header h1 {
+            font-size: 26px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Navigation Bar */
+        nav {
+            background-color: #ffffff;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e0e6ed;
+        }
+
+        .nav-links a {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        .user-profile {
+            font-weight: bold;
+            color: #003366;
+            background-color: #e6f0ff;
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+
+        /* Container Content */
+        .main-container {
+            width: 90%;
+            max-width: 850px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            flex: 1;
+        }
+
+        section {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #004080;
+            font-size: 20px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #e6f0ff;
+            padding-bottom: 6px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        /* Interactive Button */
+        .btn-primary {
+            background-color: #0056b3;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #003d80;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            overflow: hidden;
+            border-radius: 6px;
+            box-shadow: 0 0 0 1px #d0d7de;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0056b3;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        tr:hover {
+            background-color: #edf5ff;
+        }
+
+        td {
+            border-bottom: 1px solid #e1e4e8;
+            color: #444;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #0056b3;
+            color: #ffffff;
+            text-align: center;
+            padding: 18px 0;
+            font-size: 14px;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>WELCOME TO KL PAGE</h1>
+    </header>
+
+    <nav>
+        <div class="nav-links">
+            <a href="#">Home</a> | <a href="#">About</a>
+        </div>
+        <div class="user-profile">
+            Sai Vatsal
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <section>
+            <h2>Home Section</h2>
+            <p id="dynamic-text">This paragraph will be updated by JavaScript.</p>
+            <button class="btn-primary" id="update-btn">Click Me</button>
+        </section>
+
+        <section>
+            <h2>About Section</h2>
+            <p><strong id="inner-html-target">Hello from innerHTML!</strong></p>
+            <p id="js-target">This line came from JavaScript.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course_Code</th>
+                        <th>Subject_Name</th>
+                        <th>Course_Faculty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>25SC2008</td>
+                        <td>Full Stack Web Development</td>
+                        <td>Mr. Dineshnath.G</td>
+                    </tr>
+                    <tr>
+                        <td>24SDCS02</td>
+                        <td>Full Stack Application Development</td>
+                        <td>Mr. Dineshnath.G</td>
+                    </tr>
+                    <tr>
+                        <td>23SDC02A</td>
+                        <td>Service Oriented Architecture using Microservices</td>
+                        <td>Mr. Dineshnath.G</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 KLU</p>
+    </footer>
+
+    <script>
+        document.getElementById("update-btn").addEventListener("click", function() {
+            document.getElementById("dynamic-text").innerText = "The content was successfully updated by JavaScript!";
+            this.style.backgroundColor = "#28a745";
+            this.innerText = "Updated!";
+        });
+    </script>
+</body>
+</html>

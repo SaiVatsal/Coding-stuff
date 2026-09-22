@@ -1,0 +1,11 @@
+{
+  "planner": "native_local",
+  "researcher": "native_local",
+  "analyst": "native_local",
+  "executor": "native_local",
+  "critic": "native_local",
+  "chairman": "native_local",
+  "native_model": "qwen3.5:9b",
+  "autonomous_mode": false,
+  "council_mode": false
+}

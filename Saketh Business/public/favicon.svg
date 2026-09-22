@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" fill="#141414" rx="4"/>
+  <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="'Cinzel', Georgia, serif" font-weight="700" font-size="28" fill="#FBF9F5" letter-spacing="2">NH</text>
+  <line x1="16" y1="46" x2="48" y2="46" stroke="#9E4A28" stroke-width="2"/>
+</svg>

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /checkout/
+Disallow: /order-confirmation/
+
+Sitemap: https://nitrohub.in/sitemap.xml

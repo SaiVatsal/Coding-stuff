@@ -1,0 +1,33 @@
+{
+  "name": "gta6-live-internet-gateway-node",
+  "version": "1.0.0",
+  "description": "Production-grade Node.js/WebSocket Middleware API Gateway for GTA 6 Live Internet Subsystem (Eyefind Engine)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [
+    "gta6",
+    "unreal-engine",
+    "eyefind",
+    "middleware",
+    "gateway",
+    "satire",
+    "bawsaq",
+    "radio-broadcast",
+    "duckduckgo",
+    "brave-search"
+  ],
+  "author": "Vice City / Leonida Open World Studios",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.2.0",
+    "ws": "^8.17.0"
+  },
+  "devDependencies": {}
+}

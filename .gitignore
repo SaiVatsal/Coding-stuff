@@ -1,0 +1,48 @@
+*.iml
+.gradle
+.kotlin
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+.env
+debug.keystore
+
+# Dependencies & Environments
+node_modules/
+**/node_modules/
+venv/
+**/venv/
+.venv/
+**/.venv/
+env/
+**/env/
+__pycache__/
+**/__pycache__/
+
+# Framework Caches & Build Outputs
+.next/
+**/.next/
+dist/
+**/dist/
+.turbo/
+**/.turbo/
+
+# Large Files & Archives exceeding GitHub's 100MB limit
+*.zip
+*.tar
+*.gz
+*.iso
+*.msi
+*.exe
+GoogleChromeEnterpriseBundle64/
+hacking tools/SecLists/

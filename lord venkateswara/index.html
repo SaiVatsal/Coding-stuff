@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lord Venkateswara Swamy - 10s Ultra-Cinematic Particle Emergence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <!-- WebGL Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- Ultra-Minimalist Cinematic HUD Overlay -->
+  <div id="hud">
+    <!-- Top Header Title -->
+    <header class="hud-header">
+      <div class="divine-badge">
+        <span class="badge-dot"></span>
+        <span class="badge-text">4K HDR • 60 FPS CELESTIAL CANVAS</span>
+      </div>
+      <h1 class="divine-title">LORD VENKATESWARA SWAMY</h1>
+      <p class="divine-subtitle">TI R U P A T I   B A L A J I</p>
+    </header>
+
+    <!-- Bottom Timeline & Transport Controls -->
+    <div class="hud-controls-wrapper">
+      <div class="timeline-bar-container">
+        <div class="timeline-time start-time" id="time-current">00:00</div>
+        <div class="timeline-track" id="timeline-track">
+          <div class="timeline-progress" id="timeline-progress"></div>
+          <div class="timeline-handle" id="timeline-handle"></div>
+        </div>
+        <div class="timeline-time end-time">00:10</div>
+      </div>
+
+      <div class="controls-toolbar">
+        <div class="left-tools">
+          <button id="btn-camera" class="tool-btn" title="Toggle Camera Mode (Cinematic / Interactive)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            <span id="camera-label">CINEMATIC DOLLY</span>
+          </button>
+        </div>
+
+        <div class="center-tools">
+          <button id="btn-replay" class="control-btn" title="Replay Animation (0s)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 4v6h6"/>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+            </svg>
+          </button>
+
+          <button id="btn-play" class="control-btn play-main" title="Play / Pause">
+            <svg id="icon-play" class="icon play-icon" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            <svg id="icon-pause" class="icon pause-icon hidden" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="6" y="4" width="4" height="16"/>
+              <rect x="14" y="4" width="4" height="16"/>
+            </svg>
+          </button>
+
+          <div class="fps-pill">
+            <span class="fps-value" id="fps-counter">60</span> FPS
+          </div>
+        </div>
+
+        <div class="right-tools">
+          <button id="btn-fullscreen" class="tool-btn" title="Toggle Fullscreen">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

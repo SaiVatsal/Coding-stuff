@@ -1,0 +1,7 @@
+[build]
+target-dir = "C:/Users/Vatsal's/AppData/Local/Temp/cargo-wrk-target"
+jobs = 2
+
+[profile.dev]
+codegen-units = 1
+incremental = false

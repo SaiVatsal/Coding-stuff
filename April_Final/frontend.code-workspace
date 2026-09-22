@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "llm-council-master/frontend"
+		},
+		{
+			"path": "llm-council-master/backend"
+		}
+	],
+	"settings": {}
+}

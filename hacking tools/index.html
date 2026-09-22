@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Awesome Hacking — Curated Security Resource Directory</title>
+  <meta name="description" content="A curated directory of awesome security resources for hackers, pentesters, and security researchers. Browse 80+ collections covering OSINT, web hacking, malware analysis, reverse engineering, bug bounty, CTF, and more.">
+  <meta name="keywords" content="hacking, cybersecurity, pentesting, OSINT, bug bounty, CTF, malware analysis, reverse engineering, security tools, infosec">
+  <meta name="author" content="Vatsal">
+  <meta property="og:title" content="Awesome Hacking — Curated Security Resource Directory">
+  <meta property="og:description" content="Browse 80+ curated awesome lists for hackers, pentesters & security researchers.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://github.com/Hack-with-Github/Awesome-Hacking">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Awesome Hacking — Security Resource Directory">
+  <meta name="twitter:description" content="Browse 80+ curated awesome lists for hackers, pentesters & security researchers.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💀</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Background effects -->
+  <div class="bg-grid"></div>
+  <div class="bg-gradient"></div>
+
+  <!-- ── Navigation ──────────────────────────────────── -->
+  <nav class="nav" role="navigation" aria-label="Main Navigation">
+    <div class="nav-inner">
+      <a href="#" class="nav-brand" aria-label="Awesome Hacking Home">
+        <div class="nav-logo">💀</div>
+        <div class="nav-title">Awesome <span>Hacking</span></div>
+      </a>
+
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-links" id="nav-links">
+        <a href="#resources" class="nav-link active">Resources</a>
+        <a href="#other-resources" class="nav-link">Other Lists</a>
+        <a href="#contribute" class="nav-link">Contribute</a>
+        <a href="https://github.com/Hack-with-Github/Awesome-Hacking"
+           class="nav-github" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Main Content ────────────────────────────────── -->
+  <main>
+    <div class="wrapper">
+
+      <!-- Hero -->
+      <section class="hero" id="top">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Open Source · Community Curated
+        </div>
+        <h1>Awesome Hacking Directory</h1>
+        <p class="hero-subtitle">
+          A curated collection of awesome lists for hackers, pentesters &amp; security researchers.
+          Browse, search, and discover the best open-source security resources — all in one place.
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="total-count">0</div>
+            <div class="hero-stat-label">Resources</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="stat-categories">0</div>
+            <div class="hero-stat-label">Categories</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="stat-awesome">0</div>
+            <div class="hero-stat-label">Awesome Lists</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search -->
+      <section class="search-section">
+        <div class="search-container">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" class="search-input" id="search-input"
+                 placeholder="Search resources, categories, tools..."
+                 aria-label="Search resources" autocomplete="off">
+          <span class="search-shortcut">/</span>
+        </div>
+        <div class="search-count" id="search-count"></div>
+      </section>
+
+      <!-- Filters -->
+      <div class="filters" id="filters" role="group" aria-label="Category filters"></div>
+
+      <!-- Awesome Repositories -->
+      <section class="resources-section" id="awesome-section">
+        <div class="section-header" id="resources">
+          <h2>⭐ Awesome Repositories</h2>
+          <div class="line"></div>
+          <span class="section-count" id="awesome-count">0</span>
+        </div>
+        <div class="resource-grid" id="awesome-grid"></div>
+      </section>
+
+      <!-- Other Useful Repositories -->
+      <section class="resources-section" id="other-section">
+        <div class="section-header" id="other-resources">
+          <h2>📂 Other Useful Repositories</h2>
+          <div class="line"></div>
+          <span class="section-count" id="other-count">0</span>
+        </div>
+        <div class="resource-grid" id="other-grid"></div>
+      </section>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="empty-state" style="display:none;">
+        <div class="empty-state-icon">🔍</div>
+        <h3>No resources found</h3>
+        <p>Try a different search term or clear the category filter.</p>
+      </div>
+
+      <!-- Contribute -->
+      <section class="contribute-section" id="contribute">
+        <h2>🤝 Want to Contribute?</h2>
+        <p>
+          This collection is community-driven and always growing. If you know an awesome security
+          resource that's missing, we'd love your help! Submit a pull request or open an issue
+          on GitHub.
+        </p>
+        <div class="contribute-actions">
+          <a href="https://github.com/Hack-with-Github/Awesome-Hacking/blob/master/contributing.md"
+             target="_blank" rel="noopener noreferrer" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7.25-3.25v2.5h2.5a.75.75 0 0 1 0 1.5h-2.5v2.5a.75.75 0 0 1-1.5 0v-2.5h-2.5a.75.75 0 0 1 0-1.5h2.5v-2.5a.75.75 0 0 1 1.5 0Z"/>
+            </svg>
+            Contribution Guide
+          </a>
+          <a href="https://github.com/Hack-with-Github/Awesome-Hacking"
+             target="_blank" rel="noopener noreferrer" class="btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/>
+            </svg>
+            Star on GitHub
+          </a>
+        </div>
+      </section>
+
+    </div><!-- .wrapper -->
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>
+        Based on
+        <a href="https://github.com/Hack-with-Github/Awesome-Hacking" target="_blank" rel="noopener noreferrer">
+          Awesome Hacking
+        </a>
+        by
+        <a href="https://github.com/Hack-with-Github" target="_blank" rel="noopener noreferrer">
+          Hack with GitHub
+        </a>
+        · Follow on
+        <a href="https://twitter.com/HackwithGithub" target="_blank" rel="noopener noreferrer">Twitter</a>
+        ·
+        <a href="https://www.facebook.com/HackwithGithub" target="_blank" rel="noopener noreferrer">Facebook</a>
+      </p>
+      <p class="footer-credits">
+        Directory built by <strong>Vatsal</strong> · Static HTML/CSS/JS · Data-driven architecture for easy updates
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+    "name": "open-agent-hub",
+    "description": "Unified capability management center for Skills, Agents, and Commands.",
+    "version": "3.0.0",
+    "author": {
+        "name": "guanyang",
+        "email": "guanyangsunlight@gmail.com",
+        "url": "https://github.com/guanyang"
+    },
+    "homepage": "https://github.com/guanyang/open-agent-hub",
+    "repository": "https://github.com/guanyang/open-agent-hub",
+    "license": "MIT",
+    "keywords": [
+        "agent",
+        "skills",
+        "cli",
+        "hub",
+        "claude-code",
+        "open-agent-hub"
+    ]
+}

@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "target": "ES2022",
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts", "../shared/**/*.ts"]
+}

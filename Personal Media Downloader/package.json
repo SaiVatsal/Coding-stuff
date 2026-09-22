@@ -1,0 +1,17 @@
+{
+  "name": "personal-media-downloader",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["client", "server", "shared"],
+  "scripts": {
+    "dev": "concurrently \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm --workspace server run dev",
+    "dev:client": "npm --workspace client run dev",
+    "build": "npm --workspace shared run build && npm --workspace server run build && npm --workspace client run build",
+    "start": "npm --workspace server run start",
+    "install:all": "npm install && npm --workspace server install && npm --workspace client install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

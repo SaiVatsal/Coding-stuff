@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alcoholic Beverages - Educational Presentation by Vatsal</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #ff6b35;
+            --secondary-color: #f7c59f;
+            --accent-color: #FFD700;
+            --accent-pink: #ff0080;
+            --accent-cyan: #00ffff;
+            --accent-purple: #a855f7;
+            --accent-green: #00ff88;
+            --dark-bg: #0a0a1a;
+            --light-text: #f5f5f5;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --glow-gold: 0 0 30px rgba(255, 215, 0, 0.5);
+            --glow-pink: 0 0 30px rgba(255, 0, 128, 0.5);
+            --glow-cyan: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 25%, #0a1a2e 50%, #0a2a1a 75%, #1a1a0a 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: var(--light-text);
+            line-height: 1.8;
+            overflow-x: hidden;
+            perspective: 1000px;
+            font-size: 18px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Animated Background Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: particleFloat 20s infinite linear;
+            opacity: 0.6;
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; background: var(--accent-color); }
+        .particle:nth-child(2) { left: 20%; animation-delay: 2s; background: var(--accent-pink); }
+        .particle:nth-child(3) { left: 30%; animation-delay: 4s; background: var(--accent-cyan); }
+        .particle:nth-child(4) { left: 40%; animation-delay: 6s; background: var(--accent-purple); }
+        .particle:nth-child(5) { left: 50%; animation-delay: 8s; background: var(--accent-green); }
+        .particle:nth-child(6) { left: 60%; animation-delay: 10s; background: var(--accent-color); }
+        .particle:nth-child(7) { left: 70%; animation-delay: 12s; background: var(--accent-pink); }
+        .particle:nth-child(8) { left: 80%; animation-delay: 14s; background: var(--accent-cyan); }
+        .particle:nth-child(9) { left: 90%; animation-delay: 16s; background: var(--accent-purple); }
+        .particle:nth-child(10) { left: 95%; animation-delay: 18s; background: var(--accent-green); }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Glowing Orbs Background */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            z-index: 0;
+            animation: orbFloat 10s ease-in-out infinite;
+        }
+
+        .orb-1 { width: 400px; height: 400px; background: var(--accent-pink); top: 10%; left: 10%; animation-delay: 0s; }
+        .orb-2 { width: 300px; height: 300px; background: var(--accent-cyan); top: 50%; right: 10%; animation-delay: 3s; }
+        .orb-3 { width: 350px; height: 350px; background: var(--accent-purple); bottom: 10%; left: 30%; animation-delay: 6s; }
+        .orb-4 { width: 250px; height: 250px; background: var(--accent-gold); top: 30%; right: 30%; animation-delay: 9s; }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 10, 26, 0.9);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 15px 0;
+            box-shadow: 0 2px 30px rgba(255, 0, 128, 0.2), 0 0 60px rgba(0, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            list-style: none;
+            gap: 5px;
+        }
+
+        nav a {
+            color: var(--light-text);
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 25px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        nav a:hover::before {
+            left: 100%;
+        }
+
+        nav a:hover {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink));
+            color: var(--dark-bg);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4), 0 0 20px rgba(255, 0, 128, 0.3);
+            border-color: var(--accent-color);
+        }
+
+        /* Section Styles */
+        section {
+            min-height: 100vh;
+            padding: 100px 5%;
+            position: relative;
+            transform-style: preserve-3d;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 60px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            animation: titleFloat 3s ease-in-out infinite, colorShift 5s ease infinite;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-pink), var(--accent-color), var(--accent-cyan));
+            border-radius: 2px;
+            box-shadow: 0 0 20px var(--accent-color);
+        }
+
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0) rotateX(0); }
+            50% { transform: translateY(-10px) rotateX(5deg); }
+        }
+
+        @keyframes colorShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+
+        /* 3D Card Styles */
+        .card-3d {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 25px;
+            padding: 35px;
+            margin: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            font-size: 1.05rem;
+        }
+
+        .card-3d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.7s ease;
+        }
+
+        .card-3d:hover::before {
+            left: 100%;
+        }
+
+        .card-3d:hover {
+            transform: translateZ(40px) rotateY(5deg) rotateX(5deg);
+            box-shadow: 0 35px 80px rgba(255, 0, 128, 0.3), 0 0 40px rgba(255, 215, 0, 0.2);
+            border-color: var(--accent-color);
+        }
+
+        /* Hero Section */
+        #hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(ellipse at center, rgba(255, 0, 128, 0.1) 0%, transparent 50%),
+                        radial-gradient(ellipse at top left, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(ellipse at bottom right, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.05), transparent, rgba(255, 0, 128, 0.05), transparent);
+            animation: heroRotate 20s linear infinite;
+        }
+
+        @keyframes heroRotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-content {
+            z-index: 2;
+            animation: fadeInUp 1.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) rotateX(-10deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+
+        #hero h1 {
+            font-size: 5.5rem;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink), var(--accent-cyan), var(--accent-color));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s ease infinite, textGlow 2s ease-in-out infinite alternate;
+            text-shadow: none;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.3));
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes textGlow {
+            from { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3)); }
+            to { filter: drop-shadow(0 0 40px rgba(255, 0, 128, 0.5)); }
+        }
+
+        #hero p {
+            font-size: 1.5rem;
+            max-width: 700px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Floating 3D Elements */
+        .floating-element {
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.5;
+            filter: drop-shadow(0 0 20px currentColor);
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateZ(0deg) scale(1); }
+            50% { transform: translateY(-30px) rotateZ(15deg) scale(1.1); }
+        }
+
+        .glass-1 { top: 10%; left: 10%; font-size: 5rem; animation-delay: 0s; color: var(--accent-color); }
+        .glass-2 { top: 20%; right: 15%; font-size: 4rem; animation-delay: 1s; color: var(--accent-pink); }
+        .glass-3 { bottom: 25%; left: 15%; font-size: 4.5rem; animation-delay: 2s; color: var(--accent-cyan); }
+        .glass-4 { bottom: 35%; right: 10%; font-size: 3.5rem; animation-delay: 3s; color: var(--accent-purple); }
+        .glass-5 { top: 40%; left: 5%; font-size: 3rem; animation-delay: 4s; color: var(--accent-green); }
+        .glass-6 { top: 60%; right: 8%; font-size: 3.5rem; animation-delay: 5s; color: var(--accent-color); }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Image Styles */
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            margin: 20px 0;
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .image-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--accent-color), var(--accent-pink), var(--accent-cyan), var(--accent-color));
+            background-size: 400% 400%;
+            z-index: -1;
+            border-radius: 22px;
+            animation: borderGlow 3s ease infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-container:hover::before {
+            opacity: 1;
+        }
+
+        @keyframes borderGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .image-container:hover {
+            transform: scale(1.05) rotateY(5deg) translateZ(20px);
+            box-shadow: 0 30px 70px rgba(255, 0, 128, 0.3);
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+
+        .image-container:hover img {
+            transform: scale(1.1);
+            filter: brightness(1.1) saturate(1.2);
+        }
+
+        .image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: 30px 15px 15px;
+            font-size: 0.95rem;
+            text-align: center;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+        }
+
+        /* Timeline for History */
+        .timeline {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-color), var(--accent-pink), var(--accent-cyan), var(--accent-purple));
+            border-radius: 3px;
+            box-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--accent-pink);
+        }
+
+        .timeline-item {
+            padding: 20px;
+            width: 45%;
+            position: relative;
+            animation: slideIn 0.8s ease forwards;
+            opacity: 0;
+        }
+
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 55%;
+        }
+
+        .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.3s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.5s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.7s; }
+        .timeline-item:nth-child(5) { animation-delay: 0.9s; }
+
+        @keyframes slideIn {
+            to { opacity: 1; }
+        }
+
+        .timeline-dot {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink));
+            border-radius: 50%;
+            top: 30px;
+            box-shadow: 0 0 30px var(--accent-color), 0 0 60px var(--accent-pink);
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px var(--accent-color); }
+            50% { transform: scale(1.2); box-shadow: 0 0 50px var(--accent-pink); }
+        }
+
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: -35px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -35px;
+        }
+
+        .timeline-content {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .timeline-content:hover {
+            transform: translateZ(30px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(255, 0, 128, 0.3);
+            border-color: var(--accent-pink);
+        }
+
+        .timeline-date {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--accent-color);
+        }
+
+        /* Process Steps */
+        .process-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            perspective: 1000px;
+        }
+
+        .process-step {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            padding: 30px;
+            border-radius: 25px;
+            text-align: center;
+            width: 200px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .process-step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.1), rgba(0, 255, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .process-step:hover::before {
+            opacity: 1;
+        }
+
+        .process-step:hover {
+            transform: translateY(-25px) rotateY(15deg) rotateX(10deg) scale(1.05);
+            box-shadow: 0 40px 80px rgba(255, 0, 128, 0.4), 0 0 30px rgba(0, 255, 255, 0.3);
+            border-color: var(--accent-pink);
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink), var(--accent-cyan));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--dark-bg);
+            margin: 0 auto 20px;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 30px var(--accent-color);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), 0 0 40px rgba(255, 0, 128, 0.2); transform: scale(1); }
+            50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.6), 0 0 60px rgba(255, 0, 128, 0.4); transform: scale(1.1); }
+        }
+
+        .process-arrow {
+            font-size: 2.5rem;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            animation: arrowMove 1s ease-in-out infinite;
+            text-shadow: 0 0 20px var(--accent-cyan);
+        }
+
+        @keyframes arrowMove {
+            0%, 100% { transform: translateX(0); opacity: 0.7; }
+            50% { transform: translateX(15px); opacity: 1; }
+        }
+
+        /* Classification Cards */
+        .drink-type {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+            border-radius: 25px;
+            padding: 35px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drink-type::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink), var(--accent-cyan));
+            border-radius: 27px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .drink-type:hover::before {
+            opacity: 1;
+        }
+
+        .drink-type:hover {
+            transform: translateY(-20px) rotateX(10deg) scale(1.02);
+            box-shadow: 0 30px 70px rgba(255, 0, 128, 0.3), 0 0 40px rgba(0, 255, 255, 0.2);
+        }
+
+        .drink-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            display: block;
+            animation: bounce 2s ease infinite;
+            filter: drop-shadow(0 0 20px currentColor);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.1); }
+        }
+
+        .drink-type h3 {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .drink-examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .drink-tag {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 0, 128, 0.2));
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid var(--accent-color);
+            transition: all 0.3s ease;
+        }
+
+        .drink-tag:hover {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink));
+            color: var(--dark-bg);
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Health Effects */
+        .health-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .health-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            border-radius: 25px;
+            padding: 35px;
+            backdrop-filter: blur(15px);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .health-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            border-radius: 25px 25px 0 0;
+        }
+
+        .health-card.short-term {
+            border: 1px solid rgba(255, 165, 0, 0.3);
+        }
+
+        .health-card.short-term::before {
+            background: linear-gradient(90deg, #FFA500, #FFD700, #FFA500);
+            box-shadow: 0 0 30px rgba(255, 165, 0, 0.5);
+        }
+
+        .health-card.long-term {
+            border: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .health-card.long-term::before {
+            background: linear-gradient(90deg, #FF4444, #FF0080, #FF4444);
+            box-shadow: 0 0 30px rgba(255, 0, 128, 0.5);
+        }
+
+        .health-card:hover {
+            transform: translateZ(30px) rotateY(5deg);
+            box-shadow: 0 30px 70px rgba(255, 0, 128, 0.3);
+        }
+
+        .health-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+        }
+
+        .health-card ul {
+            list-style: none;
+        }
+
+        .health-card li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .health-card li:hover {
+            padding-left: 10px;
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .health-card li::before {
+            content: '◆';
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            text-shadow: 0 0 10px var(--accent-color);
+        }
+
+        /* Legal Map */
+        .legal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .country-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .country-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.1), rgba(0, 255, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .country-card:hover::before {
+            opacity: 1;
+        }
+
+        .country-card:hover {
+            transform: translateY(-15px) rotateX(5deg) scale(1.02);
+            box-shadow: 0 30px 60px rgba(255, 0, 128, 0.25), 0 0 30px rgba(0, 255, 255, 0.15);
+            border-color: var(--accent-pink);
+        }
+
+        .country-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .country-flag {
+            font-size: 3rem;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        .country-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .legal-age {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink), var(--accent-cyan));
+            color: var(--dark-bg);
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 15px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .country-card:hover .legal-age {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(255, 0, 128, 0.4);
+        }
+
+        /* Wine Types */
+        .wine-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .wine-tag {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.4), rgba(128, 0, 128, 0.3));
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .wine-tag:hover {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink));
+            color: var(--dark-bg);
+            transform: scale(1.05);
+        }
+
+        /* Decorative Images */
+        .decorative-image {
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+            display: block;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(255, 0, 128, 0.2);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.4s ease;
+        }
+
+        .decorative-image:hover {
+            transform: scale(1.03) rotateY(5deg);
+            box-shadow: 0 30px 70px rgba(255, 0, 128, 0.3);
+        }
+
+        .image-divider {
+            text-align: center;
+            margin: 50px 0;
+            position: relative;
+        }
+
+        .image-divider::before,
+        .image-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 30%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+        }
+
+        .image-divider::before { left: 0; }
+        .image-divider::after { right: 0; }
+
+        .image-divider span {
+            font-size: 3rem;
+            padding: 0 20px;
+        }
+
+        /* Modern Challenges */
+        .challenge-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            border-radius: 25px;
+            padding: 35px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .challenge-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.1), transparent, rgba(255, 0, 128, 0.1), transparent);
+            animation: challengeRotate 10s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .challenge-card:hover::before {
+            opacity: 1;
+        }
+
+        @keyframes challengeRotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .challenge-card:hover {
+            transform: perspective(1000px) rotateY(10deg) translateZ(30px) scale(1.02);
+            box-shadow: 0 40px 80px rgba(255, 0, 128, 0.3), 0 0 40px rgba(0, 255, 255, 0.2);
+            border-color: var(--accent-cyan);
+        }
+
+        .challenge-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 0 20px currentColor);
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .challenge-card h3 {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        /* Cultural Section */
+        .culture-item {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 40px;
+            padding: 35px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .culture-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.7s ease;
+        }
+
+        .culture-item:hover::before {
+            left: 100%;
+        }
+
+        .culture-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .culture-item:hover {
+            transform: translateX(20px) scale(1.02);
+            box-shadow: 0 30px 70px rgba(255, 0, 128, 0.25);
+            border-color: var(--accent-pink);
+        }
+
+        .culture-item:nth-child(even):hover {
+            transform: translateX(-20px) scale(1.02);
+        }
+
+        .culture-icon {
+            font-size: 5rem;
+            min-width: 120px;
+            text-align: center;
+            filter: drop-shadow(0 0 30px currentColor);
+            animation: cultureFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes cultureFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        .culture-content h3 {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        /* 3D Rotating Cube */
+        .cube-container {
+            width: 220px;
+            height: 220px;
+            perspective: 1000px;
+            margin: 50px auto;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 12s linear infinite;
+        }
+
+        @keyframes rotateCube {
+            0% { transform: rotateX(0) rotateY(0); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.15), rgba(0, 255, 255, 0.15));
+            border: 3px solid;
+            border-image: linear-gradient(135deg, var(--accent-color), var(--accent-pink), var(--accent-cyan)) 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 0 30px rgba(255, 215, 0, 0.1);
+        }
+
+        .cube-face.front { transform: translateZ(110px); box-shadow: 0 0 30px rgba(255, 215, 0, 0.3); }
+        .cube-face.back { transform: rotateY(180deg) translateZ(110px); box-shadow: 0 0 30px rgba(255, 0, 128, 0.3); }
+        .cube-face.right { transform: rotateY(90deg) translateZ(110px); box-shadow: 0 0 30px rgba(0, 255, 255, 0.3); }
+        .cube-face.left { transform: rotateY(-90deg) translateZ(110px); box-shadow: 0 0 30px rgba(168, 85, 247, 0.3); }
+        .cube-face.top { transform: rotateX(90deg) translateZ(110px); box-shadow: 0 0 30px rgba(0, 255, 136, 0.3); }
+        .cube-face.bottom { transform: rotateX(-90deg) translateZ(110px); box-shadow: 0 0 30px rgba(255, 215, 0, 0.3); }
+
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 0, 128, 0.1), rgba(0, 255, 255, 0.1));
+            border: 2px solid transparent;
+            border-radius: 25px;
+            padding: 30px;
+            margin: 40px auto;
+            max-width: 900px;
+            text-align: center;
+            transform-style: preserve-3d;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-box::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink), var(--accent-cyan), var(--accent-color));
+            background-size: 300% 300%;
+            border-radius: 27px;
+            z-index: -1;
+            animation: borderGlow 3s ease infinite;
+        }
+
+        .summary-box::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: linear-gradient(135deg, rgba(10, 10, 26, 0.95), rgba(26, 10, 46, 0.95));
+            border-radius: 23px;
+            z-index: -1;
+        }
+
+        .summary-box:hover {
+            transform: translateZ(20px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(255, 0, 128, 0.3);
+        }
+
+        .summary-box h4 {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .summary-box p {
+            font-size: 1.15rem;
+        }
+
+        /* Scroll Progress */
+        .progress-bar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-pink), var(--accent-cyan), var(--accent-green));
+            background-size: 300% 100%;
+            z-index: 999;
+            width: 0%;
+            transition: width 0.2s ease;
+            animation: progressGlow 3s ease infinite;
+            box-shadow: 0 0 20px var(--accent-color);
+        }
+
+        @keyframes progressGlow {
+            0% { background-position: 0% 50%; box-shadow: 0 0 20px var(--accent-color); }
+            50% { background-position: 100% 50%; box-shadow: 0 0 30px var(--accent-pink); }
+            100% { background-position: 0% 50%; box-shadow: 0 0 20px var(--accent-color); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                padding: 0 10px;
+            }
+            
+            nav a {
+                padding: 8px 12px;
+                font-size: 0.7rem;
+            }
+
+            #hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .health-section {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                width: calc(100% - 50px);
+                left: 50px !important;
+                text-align: left !important;
+            }
+
+            .timeline-item:nth-child(odd) .timeline-dot,
+            .timeline-item:nth-child(even) .timeline-dot {
+                left: -45px;
+            }
+
+            .culture-item,
+            .culture-item:nth-child(even) {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .process-arrow {
+                transform: rotate(90deg);
+            }
+
+            .floating-element {
+                display: none;
+            }
+
+            .cube-container {
+                width: 150px;
+                height: 150px;
+            }
+
+            .cube-face {
+                width: 150px;
+                height: 150px;
+                font-size: 2.5rem;
+            }
+
+            .cube-face.front { transform: translateZ(75px); }
+            .cube-face.back { transform: rotateY(180deg) translateZ(75px); }
+            .cube-face.right { transform: rotateY(90deg) translateZ(75px); }
+            .cube-face.left { transform: rotateY(-90deg) translateZ(75px); }
+            .cube-face.top { transform: rotateX(90deg) translateZ(75px); }
+            .cube-face.bottom { transform: rotateX(-90deg) translateZ(75px); }
+        }
+
+        /* Extra visual enhancements */
+        .highlight-text {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        /* Animated underline */
+        .animated-underline {
+            position: relative;
+        }
+
+        .animated-underline::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-pink));
+            transition: width 0.3s ease;
+        }
+
+        .animated-underline:hover::after {
+            width: 100%;
+        }
+
+        /* Sparkle effect */
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Button Style */
+        .cta-button {
+            display: inline-block;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink), var(--accent-cyan));
+            background-size: 200% 200%;
+            color: var(--dark-bg);
+            text-decoration: none;
+            border-radius: 35px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4), 0 0 30px rgba(255, 0, 128, 0.3);
+            animation: buttonPulse 2s ease-in-out infinite;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% { box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4), 0 0 30px rgba(255, 0, 128, 0.3); }
+            50% { box-shadow: 0 20px 50px rgba(255, 0, 128, 0.5), 0 0 50px rgba(0, 255, 255, 0.4); }
+        }
+
+        .cta-button:hover {
+            transform: translateY(-8px) scale(1.08);
+            background-position: 100% 0;
+            box-shadow: 0 25px 60px rgba(255, 0, 128, 0.5), 0 0 60px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(180deg, transparent, rgba(255, 0, 128, 0.05), rgba(0, 0, 0, 0.5));
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        footer p {
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+
+        footer p:last-child {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            color: var(--accent-color);
+        }
+
+        /* Key Points List */
+        .key-points {
+            list-style: none;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .key-points li {
+            padding: 18px 25px;
+            margin: 12px 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            border-radius: 15px;
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .key-points li::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent);
+            transition: width 0.4s ease;
+        }
+
+        .key-points li:hover::before {
+            width: 100%;
+        }
+
+        .key-points li:hover {
+            transform: translateX(15px) scale(1.02);
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.1), rgba(0, 255, 255, 0.05));
+            border-left-color: var(--accent-pink);
+            box-shadow: 0 10px 30px rgba(255, 0, 128, 0.2);
+        }
+
+        /* Stats */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+            margin: 50px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(255, 0, 128, 0.2);
+            border-color: var(--accent-pink);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-pink), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            text-shadow: none;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
+            animation: statPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes statPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        /* Neon Glow Text */
+        .neon-text {
+            text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 40px currentColor;
+        }
+
+        /* Glass Morphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Elements -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+    <div class="glow-orb orb-4"></div>
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <nav>
+        <ul>
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#history">History</a></li>
+            <li><a href="#fermentation">Fermentation</a></li>
+            <li><a href="#classification">Types</a></li>
+            <li><a href="#culture">Culture</a></li>
+            <li><a href="#health">Health</a></li>
+            <li><a href="#legal">Legal</a></li>
+            <li><a href="#challenges">Challenges</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <span class="floating-element glass-1">🍷</span>
+        <span class="floating-element glass-2">🍺</span>
+        <span class="floating-element glass-3">🥃</span>
+        <span class="floating-element glass-4">🍸</span>
+        <span class="floating-element glass-5">🍾</span>
+        <span class="floating-element glass-6">🍹</span>
+        
+        <div class="hero-content">
+            <h1>🍷 Alcoholic Beverages 🍺</h1>
+            <p>✨ A comprehensive educational journey through the history, science, culture, and impact of alcoholic drinks on human civilization ✨</p>
+            <a href="#introduction" class="cta-button">🚀 Begin Exploration</a>
+        </div>
+
+        <div class="cube-container">
+            <div class="cube">
+                <div class="cube-face front">🍷</div>
+                <div class="cube-face back">🍺</div>
+                <div class="cube-face right">🥃</div>
+                <div class="cube-face left">🍸</div>
+                <div class="cube-face top">🍾</div>
+                <div class="cube-face bottom">🍹</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Introduction Section -->
+    <section id="introduction">
+        <h2 class="section-title">What is Alcohol?</h2>
+        
+        <div class="grid-2">
+            <div class="card-3d fade-in">
+                <h3 style="color: var(--accent-color); margin-bottom: 20px;">Definition</h3>
+                <p>Alcoholic beverages are drinks containing <strong>ethanol (C₂H₅OH)</strong>, a psychoactive substance produced through the fermentation of sugars by yeasts. The term "alcohol" comes from the Arabic word <em>"al-kuḥl"</em>, originally referring to a fine metallic powder.</p>
+                <br>
+                <p>Ethanol is the only type of alcohol safe for human consumption in moderate amounts. It acts as a central nervous system depressant, affecting mood, cognition, and physical coordination.</p>
+            </div>
+            
+            <div class="card-3d fade-in">
+                <h3 style="color: var(--accent-color); margin-bottom: 20px;">Global Significance</h3>
+                <ul class="key-points" style="margin: 0;">
+                    <li>🌍 Consumed in virtually every culture worldwide</li>
+                    <li>💰 $1.5 trillion global industry annually</li>
+                    <li>👥 Over 2 billion people consume alcohol regularly</li>
+                    <li>🏭 Major employer in agriculture and manufacturing</li>
+                    <li>🎭 Central to social rituals and celebrations</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="stats-container fade-in">
+            <div class="stat-item">
+                <span class="stat-number">13,000+</span>
+                <span class="stat-label">Years of History</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">195</span>
+                <span class="stat-label">Countries with Production</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">500+</span>
+                <span class="stat-label">Types of Beverages</span>
+            </div>
+        </div>
+
+        <div class="summary-box fade-in">
+            <h4>📚 Key Takeaway</h4>
+            <p>Alcohol is one of humanity's oldest manufactured products, deeply woven into our cultural, economic, and social fabric. Understanding its nature helps us appreciate both its significance and the responsibility that comes with its consumption.</p>
+        </div>
+    </section>
+
+    <!-- Decorative Divider -->
+    <div class="image-divider">
+        <span>🍷🍺🥃🍸🍹🍾</span>
+    </div>
+
+    <!-- History Section -->
+    <section id="history">
+        <h2 class="section-title">Historical Origins</h2>
+        <p style="text-align: center; margin-bottom: 40px; max-width: 800px; margin-left: auto; margin-right: auto;">
+            The history of alcohol spans over 13,000 years, making it one of humanity's oldest and most enduring discoveries.
+        </p>
+
+        <div class="grid-2" style="margin-bottom: 40px;">
+            <div class="image-container fade-in">
+                <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=300&fit=crop" alt="Ancient Wine History">
+                <div class="image-caption">
+                    <strong>The Carmona Wine Urn</strong> - Contains the world's oldest surviving wine (1st century AD)
+                </div>
+            </div>
+            
+            <div class="card-3d fade-in">
+                <h3 style="color: var(--accent-color); margin-bottom: 15px;">Archaeological Evidence</h3>
+                <p>Ancient artifacts like the Carmona Wine Urn provide tangible evidence of humanity's long relationship with alcohol. Discovered in Spain, this remarkable vessel contained wine that had survived for nearly 2,000 years, offering insights into Roman winemaking techniques.</p>
+                <br>
+                <p>Such discoveries help archaeologists understand trade routes, cultural practices, and the technological sophistication of ancient civilizations.</p>
+            </div>
+        </div>
+
+        <div class="timeline fade-in">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">~11,000 BCE</div>
+                    <h4>First Fermented Drinks</h4>
+                    <p>Evidence suggests early humans discovered fermentation accidentally when stored fruits or grains became alcoholic in Mesopotamia and China.</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">~7,000 BCE</div>
+                    <h4>Chinese Rice Wine</h4>
+                    <p>Archaeological evidence from Jiahu, China shows production of fermented rice, honey, and fruit beverages - the earliest known intentional brewing.</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">~5,000 BCE</div>
+                    <h4>Sumerian Beer</h4>
+                    <p>Sumerians developed systematic beer brewing, even having a goddess of beer - Ninkasi. The "Hymn to Ninkasi" contains the oldest known beer recipe.</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">~3,000 BCE</div>
+                    <h4>Egyptian Wine Culture</h4>
+                    <p>Ancient Egyptians refined wine-making and used alcohol in religious ceremonies, medicine, and daily life. Workers building pyramids were paid in beer.</p>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">~800 CE</div>
+                    <h4>Distillation Discovery</h4>
+                    <p>Arab chemists perfected distillation, leading to the creation of stronger spirits. The word "alcohol" itself comes from Arabic "al-kuḥl".</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-box fade-in">
+            <h4>📚 Key Takeaway</h4>
+            <p>Alcohol production developed independently across multiple civilizations, suggesting its discovery was an inevitable outcome of agricultural societies storing grains and fruits. From sacred ritual to daily beverage, alcohol has shaped human history in profound ways.</p>
+        </div>
+    </section>
+
+    <!-- Decorative Divider -->
+    <div class="image-divider">
+        <span>🏺🍇🌾⏳📜🗿</span>
+    </div>
+
+    <!-- Fermentation Section -->
+    <section id="fermentation">
+        <h2 class="section-title">The Science of Fermentation</h2>
+        
+        <div class="grid-2" style="margin-bottom: 40px;">
+            <div class="card-3d fade-in">
+                <h3 style="color: var(--accent-color); margin-bottom: 20px;">What is Fermentation?</h3>
+                <p><strong>Fermentation</strong> is a type of anaerobic metabolism that harnesses the redox potential of reactants to make adenosine triphosphate (ATP) and organic end products.</p>
+                <br>
+                <p>In alcoholic fermentation, organic molecules such as glucose or other sugars are catabolized, and their electrons are transferred to other organic molecules, producing ethanol and carbon dioxide as byproducts.</p>
+                <br>
+                <p style="background: rgba(255,215,0,0.1); padding: 15px; border-radius: 10px;">
+                    <strong>Chemical Equation:</strong><br>
+                    C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂<br>
+                    <small>(Glucose → Ethanol + Carbon Dioxide)</small>
+                </p>
+            </div>
+            
+            <div class="image-container fade-in">
+                <img src="https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=400&h=300&fit=crop" alt="Fermentation Process">
+                <div class="image-caption">
+                    <strong>Fermentation Process</strong> - Anaerobic metabolism producing ATP and organic compounds
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Fermentation Visual -->
+        <div class="card-3d fade-in" style="max-width: 900px; margin: 30px auto; text-align: center;">
+            <h3 style="color: var(--accent-color); margin-bottom: 20px;">🧪 The Chemistry of Fermentation</h3>
+            <div style="background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,0,128,0.1)); padding: 25px; border-radius: 15px; font-size: 1.2rem;">
+                <p style="margin-bottom: 15px;"><strong>Glucose (Sugar)</strong></p>
+                <p style="font-size: 2rem; color: var(--accent-cyan);">C₆H₁₂O₆</p>
+                <p style="font-size: 2.5rem; margin: 15px 0;">⬇️ 🦠 Yeast ⬇️</p>
+                <p style="font-size: 2rem; color: var(--accent-pink);">2C₂H₅OH + 2CO₂</p>
+                <p style="margin-top: 15px;"><strong>Ethanol + Carbon Dioxide</strong></p>
+            </div>
+        </div>
+
+        <h3 style="text-align: center; margin-bottom: 30px; color: var(--accent-color); font-size: 1.8rem;">The Fermentation Process: Step by Step</h3>
+
+        <div class="process-container fade-in">
+            <div class="process-step">
+                <div class="step-number">1</div>
+                <h4>Raw Materials</h4>
+                <p>Grains, fruits, or other sugar sources are selected and prepared</p>
+            </div>
+            
+            <div class="process-arrow">→</div>
+            
+            <div class="process-step">
+                <div class="step-number">2</div>
+                <h4>Mashing</h4>
+                <p>Materials are crushed and mixed with water to release sugars</p>
+            </div>
+            
+            <div class="process-arrow">→</div>
+            
+            <div class="process-step">
+                <div class="step-number">3</div>
+                <h4>Yeast Addition</h4>
+                <p>Saccharomyces cerevisiae yeast is added to begin fermentation</p>
+            </div>
+            
+            <div class="process-arrow">→</div>
+            
+            <div class="process-step">
+                <div class="step-number">4</div>
+                <h4>Fermentation</h4>
+                <p>Yeast converts sugars to alcohol and CO₂ over days to weeks</p>
+            </div>
+            
+            <div class="process-arrow">→</div>
+            
+            <div class="process-step">
+                <div class="step-number">5</div>
+                <h4>Maturation</h4>
+                <p>Aging allows flavors to develop and mellow</p>
+            </div>
+        </div>
+
+        <div class="grid-3 fade-in" style="margin-top: 50px;">
+            <div class="card-3d">
+                <h4 style="color: var(--accent-color); margin-bottom: 15px;">🌾 Key Organisms</h4>
+                <p><strong>Saccharomyces cerevisiae</strong> (brewer's yeast) is the primary organism used in alcohol production. Different yeast strains produce different flavors and alcohol levels.</p>
+            </div>
+            
+            <div class="card-3d">
+                <h4 style="color: var(--accent-color); margin-bottom: 15px;">🌡️ Optimal Conditions</h4>
+                <p>Temperature: 18-24°C for ales, 7-13°C for lagers. pH: 4.0-4.5. Anaerobic environment (no oxygen) is essential for alcohol production.</p>
+            </div>
+            
+            <div class="card-3d">
+                <h4 style="color: var(--accent-color); margin-bottom: 15px;">⏱️ Duration</h4>
+                <p>Primary fermentation: 1-2 weeks. Secondary fermentation: 2-4 weeks. Aging can extend from months to years depending on the beverage.</p>
+            </div>
+        </div>
+
+        <div class="summary-box fade-in">
+            <h4>📚 Key Takeaway</h4>
+            <p>Fermentation is a biochemical process where yeast converts sugars into alcohol and carbon dioxide. This natural process, discovered thousands of years ago, remains the foundation of all alcoholic beverage production today.</p>
+        </div>
+    </section>
+
+    <!-- Decorative Divider -->
+    <div class="image-divider">
+        <span>🔬🧪⚗️🧬🦠💡</span>
+    </div>
+
+    <!-- Classification Section -->
+    <section id="classification">
+        <h2 class="section-title">Classification of Alcoholic Beverages</h2>
+        
+        <div class="grid-2" style="margin-bottom: 30px;">
+            <div class="image-container fade-in">
+                <img src="https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=400&h=300&fit=crop" alt="Traditional Beer">
+                <div class="image-caption">
+                    <strong>Schlenkerla Rauchbier</strong> - A traditional German smoked beer poured from a cask
+                </div>
+            </div>
+            
+            <div class="card-3d fade-in">
+                <h3 style="color: var(--accent-color); margin-bottom: 15px;">Traditional Brewing</h3>
+                <p>Traditional brewing methods, like this German Rauchbier (smoked beer), represent centuries of refined craftsmanship. These beverages connect us to cultural heritage and regional identities.</p>
+                <br>
+                <p>The classification of alcoholic beverages depends primarily on the production method and alcohol content, creating four main categories that encompass the vast diversity of drinks worldwide.</p>
+            </div>
+        </div>
+
+        <div class="grid-4 fade-in">
+            <div class="drink-type">
+                <span class="drink-icon">🍺</span>
+                <h3>Fermented Beverages</h3>
+                <p>Made directly from fermentation of sugars. Typically 3-15% ABV.</p>
+                <div class="drink-examples">
+                    <span class="drink-tag">Beer</span>
+                    <span class="drink-tag">Wine</span>
+                    <span class="drink-tag">Cider</span>
+                    <span class="drink-tag">Mead</span>
+                    <span class="drink-tag">Sake</span>
+                </div>
+            </div>
+
+            <div class="drink-type">
+                <span class="drink-icon">🥃</span>
+                <h3>Distilled Spirits</h3>
+                <p>Fermented liquids heated to concentrate alcohol. Usually 20-50% ABV.</p>
+                <div class="drink-examples">
+                    <span class="drink-tag">Whiskey</span>
+                    <span class="drink-tag">Vodka</span>
+                    <span class="drink-tag">Rum</span>
+                    <span class="drink-tag">Gin</span>
+                    <span class="drink-tag">Tequila</span>
+                    <span class="drink-tag">Brandy</span>
+                </div>
+            </div>
+
+            <div class="drink-type">
+                <span class="drink-icon">🍷</span>
+                <h3>Fortified Wines</h3>
+                <p>Wine with added spirits for higher alcohol content. Typically 15-22% ABV.</p>
+                <div class="drink-examples">
+                    <span class="drink-tag">Port</span>
+                    <span class="drink-tag">Sherry</span>
+                    <span class="drink-tag">Madeira</span>
+                    <span class="drink-tag">Vermouth</span>
+                    <span class="drink-tag">Marsala</span>
+                </div>
+            </div>
+
+            <div class="drink-type">
+                <span class="drink-icon">🍹</span>
+                <h3>Mixed Drinks</h3>
+                <p>Combinations of spirits, mixers, and flavorings. Variable ABV.</p>
+                <div class="drink-examples">
+                    <span class="drink-tag">Cocktails</span>
+                    <span class="drink-tag">Liqueurs</span>
+                    <span class="drink-tag">Punches</span>
+                    <span class="drink-tag">Highballs</span>
+                    <span class="drink-tag">Shots</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Images for Classification -->
+        <div class="grid-2 fade-in" style="margin-top: 40px;">
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=400&h=300&fit=crop" alt="Distillation Process">
+                <div class="image-caption">
+                    <strong>Copper Distillation Still</strong> - Traditional equipment used for distilling spirits from fermented liquids
+                </div>
+            </div>
+            
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1516535794938-6063878f08cc?w=400&h=300&fit=crop" alt="Various Alcoholic Beverages">
+                <div class="image-caption">
+                    <strong>Variety of Alcoholic Beverages</strong> - Wine, beer, champagne, and spirits from around the world
+                </div>
+            </div>
+        </div>
+
+        <div class="card-3d fade-in" style="max-width: 1000px; margin: 40px auto;">
+            <h3 style="color: var(--accent-color); margin-bottom: 20px; text-align: center;">Alcohol Content Comparison</h3>
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
+                <div style="text-align: center;">
+                    <div style="height: 60px; width: 40px; background: linear-gradient(to top, var(--accent-color) 15%, transparent 15%); margin: 0 auto 10px; border: 2px solid var(--accent-color); border-radius: 5px;"></div>
+                    <strong>Beer</strong><br><small>3-8% ABV</small>
+                </div>
+                <div style="text-align: center;">
+                    <div style="height: 60px; width: 40px; background: linear-gradient(to top, var(--accent-color) 30%, transparent 30%); margin: 0 auto 10px; border: 2px solid var(--accent-color); border-radius: 5px;"></div>
+                    <strong>Wine</strong><br><small>9-16% ABV</small>
+                </div>
+                <div style="text-align: center;">
+                    <div style="height: 60px; width: 40px; background: linear-gradient(to top, var(--accent-color) 44%, transparent 44%); margin: 0 auto 10px; border: 2px solid var(--accent-color); border-radius: 5px;"></div>
+                    <strong>Fortified</strong><br><small>15-22% ABV</small>
+                </div>
+                <div style="text-align: center;">
+                    <div style="height: 60px; width: 40px; background: linear-gradient(to top, var(--accent-color) 80%, transparent 80%); margin: 0 auto 10px; border: 2px solid var(--accent-color); border-radius: 5px;"></div>
+                    <strong>Spirits</strong><br><small>35-50% ABV</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-box fade-in">
+            <h4>📚 Key Takeaway</h4>
+            <p>Alcoholic beverages are classified into four main categories based on production method: fermented (beer, wine), distilled (spirits), fortified (port, sherry), and mixed (cocktails). Each category has distinct characteristics, traditions, and cultural significance.</p>
+        </div>
+    </section>
+
+    <!-- Decorative Divider -->
+    <div class="image-divider">
+        <span>🍺🍷🥃🍸🍹🍾</span>
+    </div>
+
+    <!-- Culture Section -->
+    <section id="culture">
+        <h2 class="section-title">Cultural & Social Roles</h2>
+        
+        <div class="culture-item fade-in">
+            <div class="culture-icon">🎉</div>
+            <div class="culture-content">
+                <h3>Festivals & Celebrations</h3>
+                <p>Alcohol plays a central role in celebrations worldwide. <strong>Oktoberfest</strong> in Germany attracts 6 million visitors annually, celebrating Bavarian beer culture. <strong>La Tomatina</strong> in Spain pairs wine with festivity, while <strong>Carnival</strong> in Brazil and <strong>Mardi Gras</strong> in New Orleans feature elaborate drinking traditions. Religious ceremonies often include wine, from Christian communion to Jewish Kiddush.</p>
+            </div>
+        </div>
+
+        <div class="culture-item fade-in">
+            <div class="culture-icon">✈️</div>
+            <div class="culture-content">
+                <h3>Tourism & Economy</h3>
+                <p>Wine tourism in regions like <strong>Napa Valley, Bordeaux, and Tuscany</strong> generates billions in revenue. Whiskey trails in Scotland and Kentucky, sake breweries in Japan, and tequila distilleries in Mexico attract millions of tourists. This "beverage tourism" supports local economies, preserves traditional crafts, and creates cultural exchange.</p>
+            </div>
+        </div>
+
+        <div class="culture-item fade-in">
+            <div class="culture-icon">🤝</div>
+            <div class="culture-content">
+                <h3>Social Bonding</h3>
+                <p>Sharing drinks is a universal social ritual. <strong>Toasting</strong> dates back to ancient Greece, where hosts would drink first to prove wine wasn't poisoned. <strong>Happy hours, pub culture, wine tastings,</strong> and <strong>cocktail parties</strong> all serve as social lubricants, facilitating conversation, business deals, and relationship building.</p>
+            </div>
+        </div>
+
+        <div class="culture-item fade-in">
+            <div class="culture-icon">🎨</div>
+            <div class="culture-content">
+                <h3>Art & Literature</h3>
+                <p>Alcohol has inspired countless works of art and literature. From the wine-soaked poetry of <strong>Omar Khayyám</strong> to <strong>Hemingway's</strong> whiskey-fueled prose, from <strong>Van Gogh's</strong> absinthe-influenced paintings to modern cocktail culture in film and television, alcohol remains a muse for creative expression.</p>
+            </div>
+        </div>
+
+        <div class="grid-3 fade-in" style="margin-top: 40px;">
+            <div class="card-3d">
+                <h4 style="color: var(--accent-color); margin-bottom: 10px;">🇩🇪 Oktoberfest</h4>
+                <p>World's largest beer festival, serving 7.5 million liters of beer annually in Munich, Germany.</p>
+            </div>
+            <div class="card-3d">
+                <h4 style="color: var(--accent-color); margin-bottom: 10px;">🇯🇵 Sake Ceremonies</h4>
+                <p>Sacred sake rituals in Shinto shrines symbolize purification and communion with the divine.</p>
+            </div>
+            <div class="card-3d">
+                <h4 style="color: var(--accent-color); margin-bottom: 10px;">🇫🇷 Wine Terroir</h4>
+                <p>French concept that wine expresses the unique environment and traditions of its origin.</p>
+            </div>
+        </div>
+
+        <div class="summary-box fade-in">
+            <h4>📚 Key Takeaway</h4>
+            <p>Alcohol serves as more than a beverage—it's a cultural artifact that facilitates social bonding, drives tourism economies, anchors festivals and rituals, and inspires artistic expression across all societies.</p>
+        </div>
+    </section>
+
+    <!-- Decorative Divider -->
+    <div class="image-divider">
+        <span>🎉🎊🎭🌍✈️🤝</span>
+    </div>
+
+    <!-- Health Section -->
+    <section id="health">
+        <h2 class="section-title">Health Effects</h2>
+        
+        <div class="health-section fade-in">
+            <div class="health-card short-term">
+                <h3>⚡ Short-Term Effects</h3>
+                <ul>
+                    <li><strong>Euphoria & Relaxation</strong> - Initial pleasant sensations at low doses</li>
+                    <li><strong>Impaired Judgment</strong> - Reduced inhibitions and decision-making ability</li>
+                    <li><strong>Motor Impairment</strong> - Slowed reflexes and coordination problems</li>
+                    <li><strong>Slurred Speech</strong> - Difficulty articulating words clearly</li>
+                    <li><strong>Nausea & Vomiting</strong> - Body's response to toxic levels</li>
+                    <li><strong>Dehydration</strong> - Alcohol is a diuretic</li>
+                    <li><strong>Hangovers</strong> - Headache, fatigue, and discomfort</li>
+                    <li><strong>Blackouts</strong> - Memory gaps at high consumption levels</li>
+                </ul>
+            </div>
+
+            <div class="health-card long-term">
+                <h3>🔴 Long-Term Effects</h3>
+                <ul>
+                    <li><strong>Liver Disease</strong> - Fatty liver, hepatitis, cirrhosis</li>
+                    <li><strong>Cardiovascular Issues</strong> - High blood pressure, heart disease</li>
+                    <li><strong>Brain Damage</strong> - Cognitive decline and memory problems</li>
+                    <li><strong>Cancer Risk</strong> - Increased risk of mouth, throat, liver cancer</li>
+                    <li><strong>Addiction</strong> - Physical and psychological dependence</li>
+                    <li><strong>Mental Health</strong> - Depression, anxiety disorders</li>
+                    <li><strong>Immune Weakness</strong> - Increased susceptibility to illness</li>
+                    <li><strong>Nutritional Deficiency</strong> - Interference with nutrient absorption</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card-3d fade-in" style="max-width: 800px; margin: 40px auto;">
+            <h3 style="color: var(--accent-color); margin-bottom: 20px; text-align: center;">Blood Alcohol Concentration (BAC) Effects</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background: rgba(255,215,0,0.2);">
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid var(--accent-color);">BAC Level</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid var(--accent-color);">Effects</th>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">0.02-0.03%</td>
+                    <td style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">Slight relaxation, mild mood elevation</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">0.05-0.06%</td>
+                    <td style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">Reduced inhibitions, impaired judgment</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">0.08-0.10%</td>
+                    <td style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">Legal limit in most countries, significant impairment</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">0.15-0.20%</td>
+                    <td style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">Major impairment, possible blackouts</td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px;">0.30%+</td>
+                    <td style="padding: 12px;">Life-threatening, risk of alcohol poisoning</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="grid-2 fade-in">
+            <div class="card-3d">
+                <h4 style="color: #4CAF50; margin-bottom: 15px;">✅ Responsible Drinking Guidelines</h4>
+                <ul style="list-style: none;">
+                    <li style="padding: 8px 0;">• Men: No more than 2 standard drinks per day</li>
+                    <li style="padding: 8px 0;">• Women: No more than 1 standard drink per day</li>
+                    <li style="padding: 8px 0;">• Never drink and drive</li>
+                    <li style="padding: 8px 0;">• Stay hydrated between drinks</li>
+                    <li style="padding: 8px 0;">• Eat before and while drinking</li>
+                    <li style="padding: 8px 0;">• Know your limits and stop there</li>
+                </ul>
+            </div>
+            
+            <div class="card-3d">
+                <h4 style="color: #FF5722; margin-bottom: 15px;">⚠️ Risk Factors</h4>
+                <ul style="list-style: none;">
+                    <li style="padding: 8px 0;">• Family history of alcoholism</li>
+                    <li style="padding: 8px 0;">• Starting drinking at a young age</li>
+                    <li style="padding: 8px 0;">• Mental health conditions</li>
+                    <li style="padding: 8px 0;">• Peer pressure and social environment</li>
+                    <li style="padding: 8px 0;">• High stress without coping mechanisms</li>
+                    <li style="padding: 8px 0;">• Mixing alcohol with medications</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="summary-box fade-in">
+            <h4>📚 Key Takeaway</h4>
+            <p>Alcohol affects every organ system in the body. Short-term effects range from relaxation to dangerous impairment, while long-term heavy use can cause serious diseases. Responsible consumption and awareness of personal limits are essential for minimizing health risks.</p>
+        </div>
+    </section>
+
+    <!-- Decorative Divider -->
+    <div class="image-divider">
+        <span>💊⚕️🏥❤️🧠💪</span>
+    </div>
+
+    <!-- Legal Section -->
+    <section id="legal">
+        <h2 class="section-title">Legal Regulations Worldwide</h2>
+        
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 40px; opacity: 0.9;">
+            Alcohol regulations vary dramatically around the world, from complete prohibition to minimal restrictions, reflecting diverse cultural, religious, and historical factors.
+        </p>
+
+        <div class="legal-grid fade-in">
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇺🇸</span>
+                    <span class="country-name">United States</span>
+                </div>
+                <p>Strict regulations varying by state. Public consumption often prohibited. DUI laws strictly enforced.</p>
+                <span class="legal-age">21 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Cabernet Sauvignon</span>
+                    <span class="wine-tag">🍇 Zinfandel</span>
+                    <span class="wine-tag">🥂 Chardonnay</span>
+                    <span class="wine-tag">🍷 Pinot Noir</span>
+                    <span class="wine-tag">🍇 Merlot</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇬🇧</span>
+                    <span class="country-name">United Kingdom</span>
+                </div>
+                <p>Pub culture with specific licensing hours. Legal to drink at home from age 5 with parent permission.</p>
+                <span class="legal-age">18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 English Sparkling</span>
+                    <span class="wine-tag">🍇 Bacchus</span>
+                    <span class="wine-tag">🥂 Pinot Noir</span>
+                    <span class="wine-tag">🍷 Chardonnay</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇩🇪</span>
+                    <span class="country-name">Germany</span>
+                </div>
+                <p>Beer and wine at 16, spirits at 18. Liberal drinking culture with Oktoberfest traditions.</p>
+                <span class="legal-age">16/18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Riesling</span>
+                    <span class="wine-tag">🍇 Spätburgunder</span>
+                    <span class="wine-tag">🥂 Gewürztraminer</span>
+                    <span class="wine-tag">🍷 Müller-Thurgau</span>
+                    <span class="wine-tag">🍇 Silvaner</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇯🇵</span>
+                    <span class="country-name">Japan</span>
+                </div>
+                <p>Vending machines for alcohol (with age verification). Drinking in public generally acceptable.</p>
+                <span class="legal-age">20 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍶 Sake (Nihonshu)</span>
+                    <span class="wine-tag">🍷 Koshu</span>
+                    <span class="wine-tag">🍇 Muscat Bailey A</span>
+                    <span class="wine-tag">🥂 Yamanashi Wines</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇫🇷</span>
+                    <span class="country-name">France</span>
+                </div>
+                <p>World-renowned wine culture. Wine is integral to cuisine. Strict AOC regulations protect regional wines.</p>
+                <span class="legal-age">18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Bordeaux</span>
+                    <span class="wine-tag">🥂 Champagne</span>
+                    <span class="wine-tag">🍇 Burgundy</span>
+                    <span class="wine-tag">🍷 Côtes du Rhône</span>
+                    <span class="wine-tag">🍇 Beaujolais</span>
+                    <span class="wine-tag">🥂 Sauternes</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇮🇹</span>
+                    <span class="country-name">Italy</span>
+                </div>
+                <p>Wine deeply embedded in culture and daily meals. DOCG system ensures quality. Relaxed drinking culture.</p>
+                <span class="legal-age">18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Chianti</span>
+                    <span class="wine-tag">🍇 Barolo</span>
+                    <span class="wine-tag">🥂 Prosecco</span>
+                    <span class="wine-tag">🍷 Amarone</span>
+                    <span class="wine-tag">🍇 Brunello</span>
+                    <span class="wine-tag">🍷 Pinot Grigio</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇪🇸</span>
+                    <span class="country-name">Spain</span>
+                </div>
+                <p>Rich wine tradition with Rioja and Sherry. Tapas culture pairs food with wine. Late-night drinking common.</p>
+                <span class="legal-age">18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Rioja</span>
+                    <span class="wine-tag">🍇 Tempranillo</span>
+                    <span class="wine-tag">🥂 Cava</span>
+                    <span class="wine-tag">🍷 Sherry</span>
+                    <span class="wine-tag">🍇 Albariño</span>
+                    <span class="wine-tag">🍷 Garnacha</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇵🇹</span>
+                    <span class="country-name">Portugal</span>
+                </div>
+                <p>Famous for Port wine and Vinho Verde. Wine is affordable and part of daily life.</p>
+                <span class="legal-age">18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Port Wine</span>
+                    <span class="wine-tag">🍇 Vinho Verde</span>
+                    <span class="wine-tag">🥂 Madeira</span>
+                    <span class="wine-tag">🍷 Douro Reds</span>
+                    <span class="wine-tag">🍇 Touriga Nacional</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇦🇷</span>
+                    <span class="country-name">Argentina</span>
+                </div>
+                <p>World's 5th largest wine producer. Mendoza region famous globally. Affordable quality wines.</p>
+                <span class="legal-age">18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Malbec</span>
+                    <span class="wine-tag">🍇 Torrontés</span>
+                    <span class="wine-tag">🥂 Bonarda</span>
+                    <span class="wine-tag">🍷 Cabernet Sauvignon</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇨🇱</span>
+                    <span class="country-name">Chile</span>
+                </div>
+                <p>Premium wine producer with ideal climate. Known for value and quality. Growing export market.</p>
+                <span class="legal-age">18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Carménère</span>
+                    <span class="wine-tag">🍇 Sauvignon Blanc</span>
+                    <span class="wine-tag">🥂 Cabernet Sauvignon</span>
+                    <span class="wine-tag">🍷 Pisco</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇦🇺</span>
+                    <span class="country-name">Australia</span>
+                </div>
+                <p>Strict drunk driving laws. RSA (Responsible Service of Alcohol) training required for servers.</p>
+                <span class="legal-age">18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Shiraz</span>
+                    <span class="wine-tag">🍇 Chardonnay</span>
+                    <span class="wine-tag">🥂 Semillon</span>
+                    <span class="wine-tag">🍷 Cabernet Sauvignon</span>
+                    <span class="wine-tag">🍇 Riesling</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇿🇦</span>
+                    <span class="country-name">South Africa</span>
+                </div>
+                <p>Historic wine region since 1600s. Cape Winelands attract tourists. Unique Pinotage grape.</p>
+                <span class="legal-age">18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Pinotage</span>
+                    <span class="wine-tag">🍇 Chenin Blanc</span>
+                    <span class="wine-tag">🥂 Sauvignon Blanc</span>
+                    <span class="wine-tag">🍷 Shiraz</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇳🇿</span>
+                    <span class="country-name">New Zealand</span>
+                </div>
+                <p>Renowned for premium wines, especially whites. Cool climate ideal for certain varietals.</p>
+                <span class="legal-age">18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Sauvignon Blanc</span>
+                    <span class="wine-tag">🍇 Pinot Noir</span>
+                    <span class="wine-tag">🥂 Chardonnay</span>
+                    <span class="wine-tag">🍷 Riesling</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇬🇷</span>
+                    <span class="country-name">Greece</span>
+                </div>
+                <p>Ancient wine tradition dating back 6,500 years. Indigenous grape varieties. Retsina is unique to Greece.</p>
+                <span class="legal-age">18 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Assyrtiko</span>
+                    <span class="wine-tag">🍇 Retsina</span>
+                    <span class="wine-tag">🥂 Moschofilero</span>
+                    <span class="wine-tag">🍷 Xinomavro</span>
+                    <span class="wine-tag">🍇 Agiorgitiko</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇸🇦</span>
+                    <span class="country-name">Saudi Arabia</span>
+                </div>
+                <p>Complete prohibition based on Islamic law. Severe penalties for possession or consumption.</p>
+                <span class="legal-age">Prohibited</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🚫 Alcohol Prohibited</span>
+                    <span class="wine-tag">🍵 Non-alcoholic drinks only</span>
+                </div>
+            </div>
+
+            <div class="country-card">
+                <div class="country-header">
+                    <span class="country-flag">🇮🇳</span>
+                    <span class="country-name">India</span>
+                </div>
+                <p>Varies by state (18-25 years or prohibited). Some states have total prohibition. Growing wine industry.</p>
+                <span class="legal-age">18-25 Years</span>
+                <div class="wine-types">
+                    <span class="wine-tag">🍷 Sula Wines</span>
+                    <span class="wine-tag">🍇 Nashik Valley</span>
+                    <span class="wine-tag">🥂 Chenin Blanc</span>
+                    <span class="wine-tag">🍷 Shiraz</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-3d fade-in" style="max-width: 900px; margin: 40px auto;">
+            <h3 style="color: var(--accent-color); margin-bottom: 20px;">Common Regulatory Approaches</h3>
+            <div class="grid-3" style="gap: 15px;">
+                <div style="background: rgba(255,215,0,0.1); padding: 15px; border-radius: 10px;">
+                    <h4 style="margin-bottom: 10px;">🚗 Drunk Driving</h4>
+                    <p style="font-size: 0.9rem;">Most countries set BAC limits at 0.05-0.08%. Zero tolerance for new drivers in many regions.</p>
+                </div>
+                <div style="background: rgba(255,215,0,0.1); padding: 15px; border-radius: 10px;">
+                    <h4 style="margin-bottom: 10px;">🏪 Sales Restrictions</h4>
+                    <p style="font-size: 0.9rem;">Limited hours, licensed vendors, age verification, and advertising restrictions.</p>
+                </div>
+                <div style="background: rgba(255,215,0,0.1); padding: 15px; border-radius: 10px;">
+                    <h4 style="margin-bottom: 10px;">💰 Taxation</h4>
+                    <p style="font-size: 0.9rem;">Sin taxes used to discourage consumption and fund healthcare/education programs.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-box fade-in">
+            <h4>📚 Key Takeaway</h4>
+            <p>Alcohol regulations reflect each society's attempt to balance personal freedom, public health, cultural traditions, and religious values. Understanding local laws is essential for travelers and businesses in the global alcohol industry.</p>
+        </div>
+    </section>
+
+    <!-- Decorative Divider -->
+    <div class="image-divider">
+        <span>⚖️🌍📜🏛️👮🚔</span>
+    </div>
+
+    <!-- Modern Challenges Section -->
+    <section id="challenges">
+        <h2 class="section-title">Modern Challenges</h2>
+
+        <div class="grid-3 fade-in">
+            <div class="challenge-card">
+                <span class="challenge-icon">🚢</span>
+                <h3>Smuggling & Illicit Trade</h3>
+                <p>The illegal alcohol trade costs governments billions in lost tax revenue annually. Counterfeit products pose serious health risks, sometimes containing methanol or other toxic substances.</p>
+                <ul style="margin-top: 15px; font-size: 0.9rem;">
+                    <li>Cross-border smuggling operations</li>
+                    <li>Counterfeit premium brands</li>
+                    <li>Toxic "bathtub" alcohol deaths</li>
+                    <li>Online black market sales</li>
+                </ul>
+            </div>
+
+            <div class="challenge-card">
+                <span class="challenge-icon">⚕️</span>
+                <h3>Public Health Debates</h3>
+                <p>The medical community debates "safe" drinking levels. Recent studies question even moderate consumption benefits, while others highlight potential cardiovascular protection.</p>
+                <ul style="margin-top: 15px; font-size: 0.9rem;">
+                    <li>"No safe level" vs "moderate benefits"</li>
+                    <li>Rising rates of liver disease</li>
+                    <li>Alcohol and cancer research</li>
+                    <li>Mental health connections</li>
+                </ul>
+            </div>
+
+            <div class="challenge-card">
+                <span class="challenge-icon">👥</span>
+                <h3>Youth & Binge Drinking</h3>
+                <p>Binge drinking among young adults remains a significant public health concern, with long-term effects on brain development and risk of addiction.</p>
+                <ul style="margin-top: 15px; font-size: 0.9rem;">
+                    <li>Campus drinking culture</li>
+                    <li>Social media influence</li>
+                    <li>Pre-gaming and excessive consumption</li>
+                    <li>Education and prevention programs</li>
+                </ul>
+            </div>
+
+            <div class="challenge-card">
+                <span class="challenge-icon">📱</span>
+                <h3>Digital Age Marketing</h3>
+                <p>Social media advertising reaches young audiences despite regulations. Influencer promotions blur the line between content and advertising.</p>
+                <ul style="margin-top: 15px; font-size: 0.9rem;">
+                    <li>Targeted social media ads</li>
+                    <li>Influencer partnerships</li>
+                    <li>Age verification challenges</li>
+                    <li>Online sales regulation</li>
+                </ul>
+            </div>
+
+            <div class="challenge-card">
+                <span class="challenge-icon">🌍</span>
+                <h3>Climate Change Impact</h3>
+                <p>Changing weather patterns affect grape harvests, barley production, and water availability for breweries and distilleries worldwide.</p>
+                <ul style="margin-top: 15px; font-size: 0.9rem;">
+                    <li>Shifting wine regions northward</li>
+                    <li>Water scarcity for production</li>
+                    <li>Extreme weather crop damage</li>
+                    <li>Sustainability initiatives</li>
+                </ul>
+            </div>
+
+            <div class="challenge-card">
+                <span class="challenge-icon">🔬</span>
+                <h3>Emerging Alternatives</h3>
+                <p>Non-alcoholic and low-alcohol beverages are growing rapidly. The "sober curious" movement challenges traditional drinking culture.</p>
+                <ul style="margin-top: 15px; font-size: 0.9rem;">
+                    <li>NA beer and wine growth</li>
+                    <li>Mindful drinking movement</li>
+                    <li>CBD and cannabis competition</li>
+                    <li>Gen Z drinking less</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card-3d fade-in" style="max-width: 900px; margin: 40px auto;">
+            <h3 style="color: var(--accent-color); margin-bottom: 20px; text-align: center;">Global Statistics</h3>
+            <div class="stats-container" style="margin: 0;">
+                <div class="stat-item">
+                    <span class="stat-number">3M+</span>
+                    <span class="stat-label">Deaths annually attributed to alcohol</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">$250B</span>
+                    <span class="stat-label">Annual cost of alcohol misuse (US)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5.1%</span>
+                    <span class="stat-label">Of global disease burden</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-box fade-in">
+            <h4>📚 Key Takeaway</h4>
+            <p>Modern alcohol challenges include illicit trade, ongoing health debates, youth binge drinking, digital marketing concerns, climate impacts on production, and the rise of alternatives. Addressing these requires balanced policies combining education, regulation, and innovation.</p>
+        </div>
+    </section>
+
+    <!-- Conclusion -->
+    <section id="conclusion" style="text-align: center; min-height: 60vh;">
+        <h2 class="section-title">Conclusion</h2>
+        
+        <div class="card-3d fade-in" style="max-width: 900px; margin: 0 auto;">
+            <p style="font-size: 1.2rem; margin-bottom: 30px;">
+                Alcoholic beverages represent a complex intersection of science, culture, economics, and public health. From ancient fermentation discoveries to modern regulatory challenges, alcohol continues to shape human society in profound ways.
+            </p>
+            
+            <div class="grid-4" style="gap: 15px; margin-bottom: 30px;">
+                <div style="background: rgba(255,215,0,0.1); padding: 15px; border-radius: 10px;">
+                    <span style="font-size: 2rem;">📜</span>
+                    <p><strong>13,000 Years</strong><br>of History</p>
+                </div>
+                <div style="background: rgba(255,215,0,0.1); padding: 15px; border-radius: 10px;">
+                    <span style="font-size: 2rem;">🔬</span>
+                    <p><strong>Fermentation</strong><br>is Key Process</p>
+                </div>
+                <div style="background: rgba(255,215,0,0.1); padding: 15px; border-radius: 10px;">
+                    <span style="font-size: 2rem;">⚖️</span>
+                    <p><strong>Balance</strong><br>is Essential</p>
+                </div>
+                <div style="background: rgba(255,215,0,0.1); padding: 15px; border-radius: 10px;">
+                    <span style="font-size: 2rem;">🌍</span>
+                    <p><strong>Global</strong><br>Significance</p>
+                </div>
+            </div>
+
+            <p style="font-size: 1.1rem; opacity: 0.9;">
+                Understanding alcohol—its production, effects, and role in society—empowers informed decision-making and responsible consumption.
+            </p>
+        </div>
+
+        <div class="cube-container" style="margin-top: 50px;">
+            <div class="cube">
+                <div class="cube-face front">🍷</div>
+                <div class="cube-face back">🍺</div>
+                <div class="cube-face right">🥃</div>
+                <div class="cube-face left">🍸</div>
+                <div class="cube-face top">🍾</div>
+                <div class="cube-face bottom">🍹</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Educational Presentation on Alcoholic Beverages</p>
+        <p style="margin-top: 10px; font-size: 0.9rem;">Designed for educational purposes only. Please drink responsibly.</p>
+        <p style="margin-top: 25px; font-size: 1.3rem; font-weight: bold; background: linear-gradient(135deg, var(--accent-color), var(--accent-pink), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">✨ By Vatsal ✨</p>
+    </footer>
+
+    <script>
+        // Scroll Progress Bar
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        });
+
+        // Fade In Animation on Scroll
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        fadeElements.forEach(el => observer.observe(el));
+
+        // Beer Drop Cursor Effect - Optimized for Performance
+        const beerColors = ['#f4a460', '#8B4513', '#DAA520', '#CD853F', '#D2691E', '#FFD700', '#B8860B', '#FFA500'];
+        
+        let lastMouseX = 0, lastMouseY = 0, lastDropTime = 0;
+        const dropPool = []; // Reuse drop elements
+        const maxDrops = 15; // Limit active drops
+        let activeDrops = 0;
+
+        // Add optimized keyframes
+        const beerStyle = document.createElement('style');
+        beerStyle.textContent = `
+            .beer-drop {
+                position: fixed;
+                border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+                pointer-events: none;
+                z-index: 9999;
+                will-change: transform, opacity;
+                contain: layout style paint;
+            }
+            @keyframes beerFall {
+                0% { transform: translateY(0); opacity: 0.85; }
+                100% { transform: translateY(200px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(beerStyle);
+
+        function createBeerDrop(x, y) {
+            if (activeDrops >= maxDrops) return;
+            
+            let drop = dropPool.pop();
+            if (!drop) {
+                drop = document.createElement('div');
+                drop.className = 'beer-drop';
+            }
+            
+            const color = beerColors[(Math.random() * beerColors.length) | 0];
+            const size = 8 + (Math.random() * 6) | 0;
+            
+            drop.style.cssText = `
+                left:${x}px;top:${y}px;width:${size}px;height:${size * 1.2}px;
+                background:${color};opacity:0.85;
+                animation:beerFall 0.8s ease-in forwards;
+            `;
+            
+            document.body.appendChild(drop);
+            activeDrops++;
+            
+            setTimeout(() => {
+                drop.remove();
+                dropPool.push(drop);
+                activeDrops--;
+            }, 800);
+        }
+
+        // Optimized event listener with higher throttle
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastDropTime < 80) return; // 80ms throttle
+            
+            const dx = e.clientX - lastMouseX, dy = e.clientY - lastMouseY;
+            if (dx*dx + dy*dy > 400) { // distance > 20px
+                createBeerDrop(e.clientX, e.clientY);
+                lastDropTime = now;
+            }
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        }, { passive: true });
+    </script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+"""
+Satire Engine Package
+"""

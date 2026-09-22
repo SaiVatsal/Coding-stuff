@@ -1,0 +1,1146 @@
+name: CI and Release
+
+on:
+  push:
+    branches: ["**"]
+    paths-ignore:
+      - "website/**"
+      - ".github/workflows/deploy-website.yml"
+  pull_request:
+    branches: ["**"]
+    paths-ignore:
+      - "website/**"
+      - ".github/workflows/deploy-website.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-release-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
+
+jobs:
+  lint-backend:
+    if: github.ref != 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+        with:
+          go-version: "1.26.3"
+          cache-dependency-path: backend/go.sum
+
+      - name: Download Go modules
+        run: |
+          cd backend
+          go mod download
+
+      - name: Install golangci-lint
+        run: |
+          go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.11.3
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+      - name: Install swag for swagger generation
+        run: go install github.com/swaggo/swag/cmd/swag@v1.16.4
+
+      - name: Generate swagger docs
+        run: |
+          cd backend
+          swag init -d . -g cmd/main.go -o swagger
+
+      - name: Run golangci-lint
+        run: |
+          cd backend
+          golangci-lint run
+
+      - name: Verify go mod tidy
+        run: |
+          cd backend
+          go mod tidy
+          git diff --exit-code go.mod go.sum || (echo "go mod tidy made changes, please run 'go mod tidy' and commit the changes" && exit 1)
+
+  lint-frontend:
+    if: github.ref != 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          package_json_file: frontend/package.json
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          pnpm install --frozen-lockfile
+
+      - name: Check if prettier was run
+        run: |
+          cd frontend
+          pnpm format
+          git diff --exit-code || (echo "Prettier made changes, please run 'pnpm format' and commit the changes" && exit 1)
+
+      - name: Check if linter was run
+        run: |
+          cd frontend
+          pnpm lint
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          pnpm build
+
+  dockerfile-scan:
+    if: github.ref != 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo gpg --batch --no-tty --yes --dearmor -o /usr/share/keyrings/trivy.gpg
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
+      - name: Trivy Dockerfile misconfiguration scan
+        run: |
+          trivy config --severity HIGH,CRITICAL --exit-code 1 Dockerfile
+          trivy config --severity HIGH,CRITICAL --exit-code 1 agent/verification/images/postgres/Dockerfile
+
+  test-frontend:
+    if: github.ref != 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [lint-frontend]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+        with:
+          package_json_file: frontend/package.json
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          pnpm install --frozen-lockfile
+
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          pnpm test
+
+  lint-verification-agent:
+    if: github.ref != 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+        with:
+          go-version: "1.26.3"
+          cache-dependency-path: agent/verification/go.sum
+
+      - name: Download Go modules
+        run: |
+          cd agent/verification
+          go mod download
+
+      - name: Install golangci-lint
+        run: |
+          go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.11.3
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+      - name: Run golangci-lint
+        run: |
+          cd agent/verification
+          golangci-lint run
+
+      - name: Verify go mod tidy
+        run: |
+          cd agent/verification
+          go mod tidy
+          git diff --exit-code go.mod go.sum || (echo "go mod tidy made changes, please run 'go mod tidy' and commit the changes" && exit 1)
+
+  test-verification-agent:
+    if: github.ref != 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [lint-verification-agent]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+        with:
+          go-version: "1.26.3"
+          cache-dependency-path: agent/verification/go.sum
+
+      - name: Download Go modules
+        run: |
+          cd agent/verification
+          go mod download
+
+      - name: Run Go tests
+        run: |
+          cd agent/verification
+          go test -race -count=1 -failfast ./internal/...
+
+  e2e-verification-agent:
+    if: github.ref != 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [lint-verification-agent]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Run e2e tests
+        run: |
+          cd agent/verification
+          make e2e
+
+      - name: Cleanup
+        if: always()
+        run: |
+          cd agent/verification/e2e
+          docker compose down -v --rmi local || true
+          rm -rf artifacts || true
+
+  test-backend:
+    if: github.ref != 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    needs: [lint-backend]
+    steps:
+      - name: Free disk space for database images
+        run: |
+          # The suite pre-pulls ~19 GB of database images, which the stock runner's free space only
+          # just covers. These two preinstalled toolchains are unused here and reclaim ~11 GB. The
+          # hosted tool cache is deliberately left alone — setup-go installs into it below.
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android
+          df -h /
+
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+        with:
+          go-version: "1.26.3"
+          cache-dependency-path: backend/go.sum
+
+      - name: Install database client dependencies
+        run: |
+          # The bundled assets/tools clients are Debian-built; Ubuntu ships no libncurses5/libtinfo5
+          # package at all, and the ABI-identical .so.6 satisfies them via these symlinks.
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libedit2 libncurses6 libtinfo6 libpq5 libmariadb3 libgnutls30 zstd netcat-openbsd
+          sudo ln -sf /usr/lib/x86_64-linux-gnu/libncurses.so.6 /usr/lib/x86_64-linux-gnu/libncurses.so.5
+          sudo ln -sf /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
+
+      - name: Download Go modules
+        run: |
+          cd backend
+          go mod download
+
+      - name: Create .env file for testing
+        run: cp .env.example .env
+
+      - name: Start test containers
+        run: |
+          docker compose -f docker-compose.yml up -d
+
+      - name: Wait for containers to be ready
+        run: |
+          # Wait for main dev database (postgres listens on 5432 inside the container)
+          timeout 60 bash -c 'until docker exec backend-db pg_isready -U postgres; do sleep 2; done'
+
+          # Wait for test database (postgres listens on 5432 inside the container)
+          timeout 60 bash -c 'until docker exec backend-db-test pg_isready -U postgres; do sleep 2; done'
+
+          # Wait for Valkey (cache)
+          echo "Waiting for Valkey..."
+          timeout 60 bash -c 'until docker exec backend-valkey valkey-cli ping 2>/dev/null | grep -q PONG; do sleep 2; done'
+          echo "Valkey is ready!"
+
+          # 5004 = shared logical-postgres-16 fixture; 5007-5008 = shared physical-postgres 17/18
+          # primary sources. The per-version, no-summary, tablespace, mTLS and restore-target
+          # physical containers — like the per-version logical PG tests — run on testcontainers and
+          # need no fixed port.
+          timeout 60 bash -c 'until nc -z 127.0.0.1 5004; do sleep 2; done'
+          timeout 60 bash -c 'until nc -z 127.0.0.1 5007; do sleep 2; done'
+          timeout 60 bash -c 'until nc -z 127.0.0.1 5008; do sleep 2; done'
+
+      - name: Create data and temp directories
+        run: |
+          # Create directories that are used for backups and restore
+          # These paths match what's configured in config.go
+          mkdir -p databasus-data/backups
+          mkdir -p databasus-data/temp
+
+      - name: Provision per-worker test databases and run migrations
+        env:
+          TEST_PARALLEL_WORKERS: "8"
+        run: |
+          cd backend
+          go install github.com/pressly/goose/v3/cmd/goose@v3.27.1
+          export PATH="$(go env GOPATH)/bin:$PATH"
+          set -a && . ../.env && set +a
+          # cleanup_test_db creates databasus_w0..w{workers-1}, flushes Valkey, and
+          # resets the test PG containers. Then migrate each slot DB so every
+          # parallel `go test` worker connects to a migrated metadata DB.
+          go run ./cmd/cleanup_test_db
+          for i in $(seq 0 $((TEST_PARALLEL_WORKERS - 1))); do
+            dbstring=$(echo "$GOOSE_TEST_DBSTRING" | sed -E "s#/([^/?]+)\?#/\1_w$i?#")
+            echo "migrating slot $i"
+            GOOSE_DBSTRING="$dbstring" goose -dir ./migrations up
+          done
+
+      - name: Pull testcontainer images
+        run: make -C backend pull-testcontainers
+
+      - name: Run Go tests
+        env:
+          # Ryuk stays disabled to match backend/Makefile's `test` target, so CI and local runs
+          # share one code path.
+          TESTCONTAINERS_RYUK_DISABLED: "true"
+          # Each package runs in its own metadata DB + Valkey logical DB, so
+          # packages run in parallel; -p must equal the provisioned worker count.
+          TEST_PARALLEL_WORKERS: "8"
+        run: |
+          cd backend
+          # 8 workers oversubscribe the runner's 4 vCPU, so the suite needs more wall-clock than
+          # the 15m the Makefile's `test` target allows on a developer machine.
+          go test -p=8 -count=1 -failfast -timeout 40m ./internal/...
+
+  build-dev-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Build amd64 dev image and load locally
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5.4.0
+        with:
+          context: .
+          push: false
+          load: true
+          platforms: linux/amd64
+          cache-to: type=gha,mode=max,scope=dev-build-amd64
+          cache-from: type=gha,scope=dev-build-amd64
+          build-args: |
+            APP_VERSION=dev-${{ github.sha }}
+          tags: |
+            databasus-dev:smoke-${{ github.sha }}
+
+      - name: Run smoke pings against dev image
+        run: |
+          mkdir -p /tmp/databasus-dev-smoke-data
+          docker run -d --name databasus-dev-smoke \
+            -p 4005:4005 \
+            -v /tmp/databasus-dev-smoke-data:/databasus-data \
+            databasus-dev:smoke-${{ github.sha }}
+
+          for i in $(seq 1 60); do
+            health_body=$(mktemp)
+            code=$(curl -s -o "$health_body" -w '%{http_code}' http://localhost:4005/api/v1/system/health || true)
+            if [ "$code" = "200" ] && grep -q '"status"' "$health_body"; then
+              echo "healthcheck OK after ${i} attempt(s)"
+              rm -f "$health_body"
+              break
+            fi
+            rm -f "$health_body"
+            if [ "$i" -eq 60 ]; then
+              echo "healthcheck never returned valid JSON (last code: ${code})"
+              docker logs databasus-dev-smoke
+              exit 1
+            fi
+            sleep 2
+          done
+
+          body=$(curl -sf http://localhost:4005/)
+          if ! echo "$body" | grep -q 'id="root"'; then
+            echo "index.html did not contain React root div"
+            echo "$body"
+            exit 1
+          fi
+          echo "index.html OK"
+
+          for arch in amd64 arm64; do
+            echo "Checking verification agent download for $arch..."
+            out=$(mktemp)
+            http=$(curl -sS -o "$out" -w '%{http_code}' "http://localhost:4005/api/v1/system/verification-agent?arch=$arch")
+            if [ "$http" != "200" ]; then
+              echo "verification agent ($arch) download failed: HTTP $http"
+              head -c 200 "$out" || true
+              docker logs databasus-dev-smoke
+              rm -f "$out"
+              exit 1
+            fi
+            magic=$(head -c 4 "$out" | od -An -t x1 | tr -d ' ')
+            if [ "$magic" != "7f454c46" ]; then
+              echo "verification agent ($arch) is not an ELF binary (first 4 bytes: $magic)"
+              head -c 200 "$out" || true
+              docker logs databasus-dev-smoke
+              rm -f "$out"
+              exit 1
+            fi
+            size=$(stat -c%s "$out")
+            echo "verification agent ($arch) OK (${size} bytes)"
+            rm -f "$out"
+          done
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo gpg --batch --no-tty --yes --dearmor -o /usr/share/keyrings/trivy.gpg
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
+      - name: Trivy scan dev image (CRITICAL, blocking)
+        run: trivy image --severity CRITICAL --ignore-unfixed --pkg-types os,library --scanners vuln --exit-code 1 databasus-dev:smoke-${{ github.sha }}
+
+      - name: Trivy scan dev image (HIGH, advisory)
+        if: always()
+        run: trivy image --severity HIGH --ignore-unfixed --pkg-types os,library --scanners vuln --exit-code 0 databasus-dev:smoke-${{ github.sha }}
+
+      - name: Cleanup smoke container
+        if: always()
+        run: |
+          docker rm -f databasus-dev-smoke || true
+          docker rmi databasus-dev:smoke-${{ github.sha }} || true
+          rm -rf /tmp/databasus-dev-smoke-data || true
+
+  push-dev-image:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    needs: [build-dev-image]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            platform: linux/amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push dev image by digest
+        id: dev-image-push
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5.4.0
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          cache-from: type=gha,scope=dev-build-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=dev-build-${{ matrix.arch }}
+          build-args: |
+            APP_VERSION=dev-${{ github.sha }}
+          outputs: type=image,name=databasus/databasus-dev,push-by-digest=true,name-canonical=true,push=true
+
+      - name: Export image digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.dev-image-push.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload image digest
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: digests-dev-${{ matrix.arch }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge-dev-image-manifest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [push-dev-image]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+    permissions:
+      contents: read
+    steps:
+      - name: Download image digests
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: digests-dev-*
+          merge-multiple: true
+          path: /tmp/digests
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create multi-arch dev manifest
+        working-directory: /tmp/digests
+        run: |
+          platform_image_refs=()
+          for digest in *; do
+            platform_image_refs+=("databasus/databasus-dev@sha256:${digest}")
+          done
+
+          docker buildx imagetools create \
+            -t databasus/databasus-dev:latest \
+            -t "databasus/databasus-dev:${{ github.sha }}" \
+            "${platform_image_refs[@]}"
+
+  build-image:
+    if: github.ref != 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: [lint-backend, lint-frontend, lint-verification-agent, dockerfile-scan]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Build amd64 image and load locally
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5.4.0
+        with:
+          context: .
+          push: false
+          load: true
+          platforms: linux/amd64
+          cache-to: type=gha,mode=max,scope=release-build-amd64
+          cache-from: type=gha,scope=release-build-amd64
+          build-args: |
+            APP_VERSION=ci-${{ github.sha }}
+          tags: |
+            databasus:smoke-${{ github.sha }}
+
+      - name: Run smoke pings against built image
+        run: |
+          mkdir -p /tmp/databasus-smoke-data
+          docker run -d --name databasus-smoke \
+            -p 4005:4005 \
+            -v /tmp/databasus-smoke-data:/databasus-data \
+            databasus:smoke-${{ github.sha }}
+
+          for i in $(seq 1 60); do
+            health_body=$(mktemp)
+            code=$(curl -s -o "$health_body" -w '%{http_code}' http://localhost:4005/api/v1/system/health || true)
+            if [ "$code" = "200" ] && grep -q '"status"' "$health_body"; then
+              echo "healthcheck OK after ${i} attempt(s)"
+              rm -f "$health_body"
+              break
+            fi
+            rm -f "$health_body"
+            if [ "$i" -eq 60 ]; then
+              echo "healthcheck never returned valid JSON (last code: ${code})"
+              docker logs databasus-smoke
+              exit 1
+            fi
+            sleep 2
+          done
+
+          body=$(curl -sf http://localhost:4005/)
+          if ! echo "$body" | grep -q 'id="root"'; then
+            echo "index.html did not contain React root div"
+            echo "$body"
+            exit 1
+          fi
+          echo "index.html OK"
+
+          for arch in amd64 arm64; do
+            echo "Checking verification agent download for $arch..."
+            out=$(mktemp)
+            http=$(curl -sS -o "$out" -w '%{http_code}' "http://localhost:4005/api/v1/system/verification-agent?arch=$arch")
+            if [ "$http" != "200" ]; then
+              echo "verification agent ($arch) download failed: HTTP $http"
+              head -c 200 "$out" || true
+              docker logs databasus-smoke
+              rm -f "$out"
+              exit 1
+            fi
+            magic=$(head -c 4 "$out" | od -An -t x1 | tr -d ' ')
+            if [ "$magic" != "7f454c46" ]; then
+              echo "verification agent ($arch) is not an ELF binary (first 4 bytes: $magic)"
+              head -c 200 "$out" || true
+              docker logs databasus-smoke
+              rm -f "$out"
+              exit 1
+            fi
+            size=$(stat -c%s "$out")
+            echo "verification agent ($arch) OK (${size} bytes)"
+            rm -f "$out"
+          done
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo gpg --batch --no-tty --yes --dearmor -o /usr/share/keyrings/trivy.gpg
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
+      - name: Trivy scan release image (CRITICAL, blocking)
+        run: trivy image --severity CRITICAL --ignore-unfixed --pkg-types os,library --scanners vuln --exit-code 1 databasus:smoke-${{ github.sha }}
+
+      - name: Trivy scan release image (HIGH, advisory)
+        if: always()
+        run: trivy image --severity HIGH --ignore-unfixed --pkg-types os,library --scanners vuln --exit-code 0 databasus:smoke-${{ github.sha }}
+
+      - name: Cleanup smoke container
+        if: always()
+        run: |
+          docker rm -f databasus-smoke || true
+          docker rmi databasus:smoke-${{ github.sha }} || true
+          rm -rf /tmp/databasus-smoke-data || true
+
+  build-verification-image:
+    if: github.ref != 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: [lint-verification-agent, dockerfile-scan]
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      # Validate the extension Dockerfile builds (amd64, representative major) on
+      # every PR; the full multi-arch matrix is built at release time below.
+      - name: Build verification image (amd64, no push)
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5.4.0
+        with:
+          context: agent/verification/images/postgres
+          push: false
+          platforms: linux/amd64
+          build-args: |
+            PG_MAJOR=16
+          cache-from: type=gha,scope=verification-postgres-16-amd64
+          cache-to: type=gha,mode=min,scope=verification-postgres-16-amd64
+
+  determine-version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [test-backend, test-frontend, test-verification-agent, e2e-verification-agent]
+    if: ${{ github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip-release]') }}
+    outputs:
+      should_release: ${{ steps.version_bump.outputs.should_release }}
+      new_version: ${{ steps.version_bump.outputs.new_version }}
+      bump_type: ${{ steps.version_bump.outputs.bump_type }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - name: Install semver
+        run: npm install -g semver
+
+      - name: Get current version
+        id: current_version
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "current_version=${LATEST_TAG#v}" >> $GITHUB_OUTPUT
+          echo "Current version: ${LATEST_TAG#v}"
+
+      - name: Analyze commits and determine version bump
+        id: version_bump
+        shell: bash
+        run: |
+          CURRENT_VERSION="${{ steps.current_version.outputs.current_version }}"
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+
+          # Get commits since last tag
+          if [ "$LATEST_TAG" = "v0.0.0" ]; then
+            COMMITS=$(git log --pretty=format:"%s" --no-merges)
+          else
+            COMMITS=$(git log ${LATEST_TAG}..HEAD --pretty=format:"%s" --no-merges)
+          fi
+
+          echo "Analyzing commits:"
+          echo "$COMMITS"
+
+          # Initialize flags
+          HAS_FEATURE=false
+          HAS_FIX=false
+          HAS_BREAKING=false
+
+          # Analyze each commit - USE PROCESS SUBSTITUTION to avoid subshell variable scope issues
+          while IFS= read -r commit; do
+            if [[ "$commit" =~ ^FEATURE ]]; then
+              HAS_FEATURE=true
+              echo "Found FEATURE commit: $commit"
+            elif [[ "$commit" =~ ^FIX ]]; then
+              HAS_FIX=true
+              echo "Found FIX commit: $commit"
+            elif [[ "$commit" =~ ^REFACTOR ]]; then
+              HAS_FIX=true  # Treat refactor as patch
+              echo "Found REFACTOR commit: $commit"
+            fi
+
+            # Check for breaking changes
+            if [[ "$commit" =~ BREAKING[[:space:]]CHANGE ]] || [[ "$commit" =~ "!" ]]; then
+              HAS_BREAKING=true
+              echo "Found BREAKING CHANGE: $commit"
+            fi
+          done < <(printf '%s\n' "$COMMITS")
+
+          # Determine version bump
+          if [ "$HAS_BREAKING" = true ]; then
+            BUMP_TYPE="major"
+          elif [ "$HAS_FEATURE" = true ]; then
+            BUMP_TYPE="minor"
+          elif [ "$HAS_FIX" = true ]; then
+            BUMP_TYPE="patch"
+          else
+            BUMP_TYPE="none"
+          fi
+
+          echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+
+          if [ "$BUMP_TYPE" != "none" ]; then
+            NEW_VERSION=$(npx semver -i $BUMP_TYPE $CURRENT_VERSION)
+            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "New version will be: $NEW_VERSION"
+          else
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            echo "No version bump needed"
+          fi
+
+  push-image:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    needs: [determine-version, build-image]
+    if: ${{ needs.determine-version.outputs.should_release == 'true' }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            platform: linux/amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push release image by digest
+        id: release-image-push
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5.4.0
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          cache-from: type=gha,scope=release-build-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=release-build-${{ matrix.arch }}
+          build-args: |
+            APP_VERSION=${{ needs.determine-version.outputs.new_version }}
+          outputs: type=image,name=databasus/databasus,push-by-digest=true,name-canonical=true,push=true
+
+      - name: Export image digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.release-image-push.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload image digest
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: digests-release-${{ matrix.arch }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge-image-manifest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [determine-version, push-image]
+    if: ${{ needs.determine-version.outputs.should_release == 'true' }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Download image digests
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: digests-release-*
+          merge-multiple: true
+          path: /tmp/digests
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to GHCR
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Both tag sets are assembled from the same per-platform digests, so the
+      # ghcr.io mirror cannot drift from the released image.
+      - name: Create multi-arch release manifests
+        working-directory: /tmp/digests
+        env:
+          VERSION: ${{ needs.determine-version.outputs.new_version }}
+        run: |
+          platform_image_refs=()
+          for digest in *; do
+            platform_image_refs+=("databasus/databasus@sha256:${digest}")
+          done
+
+          docker buildx imagetools create \
+            -t databasus/databasus:latest \
+            -t "databasus/databasus:v${VERSION}" \
+            -t "databasus/databasus:${{ github.sha }}" \
+            "${platform_image_refs[@]}"
+
+          docker buildx imagetools create \
+            -t ghcr.io/databasus/databasus:latest \
+            -t "ghcr.io/databasus/databasus:v${VERSION}" \
+            -t "ghcr.io/databasus/databasus:${{ github.sha }}" \
+            "${platform_image_refs[@]}"
+
+  push-verification-image:
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    needs: [determine-version, build-verification-image]
+    if: ${{ needs.determine-version.outputs.should_release == 'true' }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        major: ["12", "13", "14", "15", "16", "17", "18"]
+        arch: [amd64, arm64]
+        include:
+          - arch: amd64
+            platform: linux/amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Pin the base to its current manifest digest so the published image is
+      # reproducible rather than tracking a floating postgres:<major> tag.
+      - name: Resolve digest-pinned base image
+        id: pinned-base-image
+        run: |
+          DIGEST=$(docker buildx imagetools inspect postgres:${{ matrix.major }} --format '{{.Manifest.Digest}}')
+          echo "image=postgres:${{ matrix.major }}@${DIGEST}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push verification image by digest
+        id: verification-image-push
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5.4.0
+        with:
+          context: agent/verification/images/postgres
+          platforms: ${{ matrix.platform }}
+          cache-from: type=gha,scope=verification-postgres-${{ matrix.major }}-${{ matrix.arch }}
+          cache-to: type=gha,mode=min,scope=verification-postgres-${{ matrix.major }}-${{ matrix.arch }}
+          build-args: |
+            PG_MAJOR=${{ matrix.major }}
+            BASE_IMAGE=${{ steps.pinned-base-image.outputs.image }}
+          outputs: type=image,name=databasus/verification-postgres,push-by-digest=true,name-canonical=true,push=true
+
+      - name: Export image digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.verification-image-push.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload image digest
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: digests-verification-${{ matrix.major }}-${{ matrix.arch }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge-verification-image-manifest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [determine-version, push-verification-image]
+    if: ${{ needs.determine-version.outputs.should_release == 'true' }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        major: ["12", "13", "14", "15", "16", "17", "18"]
+    steps:
+      - name: Download image digests
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: digests-verification-${{ matrix.major }}-*
+          merge-multiple: true
+          path: /tmp/digests
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create multi-arch verification manifest
+        working-directory: /tmp/digests
+        env:
+          VERSION: ${{ needs.determine-version.outputs.new_version }}
+        run: |
+          platform_image_refs=()
+          for digest in *; do
+            platform_image_refs+=("databasus/verification-postgres@sha256:${digest}")
+          done
+
+          docker buildx imagetools create \
+            -t "databasus/verification-postgres:${{ matrix.major }}" \
+            -t "databasus/verification-postgres:${{ matrix.major }}-v${VERSION}" \
+            "${platform_image_refs[@]}"
+
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [determine-version, merge-image-manifest]
+    if: ${{ needs.determine-version.outputs.should_release == 'true' }}
+    permissions:
+      contents: write
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate changelog
+        id: changelog
+        shell: bash
+        run: |
+          NEW_VERSION="${{ needs.determine-version.outputs.new_version }}"
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+
+          # Get commits since last tag
+          if [ "$LATEST_TAG" = "v0.0.0" ]; then
+            COMMITS=$(git log --pretty=format:"%s|%H|%an|%ad" --date=short --no-merges)
+          else
+            COMMITS=$(git log ${LATEST_TAG}..HEAD --pretty=format:"%s|%H|%an|%ad" --date=short --no-merges)
+          fi
+
+          # Build the changelog with real newlines (NL) instead of \n literals
+          # so we don't have to round-trip through `echo -e`. echo -e interprets
+          # backslash sequences inside commit subjects (e.g. "\c" suppresses
+          # further output) which can silently truncate the changelog and break
+          # the GitHub Actions multiline-output heredoc parser.
+          NL=$'\n'
+          CHANGELOG="# Changelog${NL}${NL}## [${NEW_VERSION}] - $(date +%Y-%m-%d)${NL}${NL}"
+
+          # Group commits by type and area
+          FEATURES=""
+          FIXES=""
+          REFACTORS=""
+
+          # USE PROCESS SUBSTITUTION to avoid subshell variable scope issues
+          while IFS= read -r line; do
+            if [ -n "$line" ]; then
+              COMMIT_MSG=$(echo "$line" | cut -d'|' -f1)
+              COMMIT_HASH=$(echo "$line" | cut -d'|' -f2)
+              SHORT_HASH=${COMMIT_HASH:0:7}
+
+              # Parse commit message format: TYPE (area): description
+              if [[ "$COMMIT_MSG" == FEATURE* ]]; then
+                TEMP="${COMMIT_MSG#FEATURE}"
+                TEMP="${TEMP#"${TEMP%%[![:space:]]*}"}"
+                if [[ "$TEMP" == \(* ]]; then
+                  AREA=$(echo "$TEMP" | sed 's/^(\([^)]*\)).*/\1/')
+                  DESC=$(echo "$TEMP" | sed 's/^([^)]*):[[:space:]]*//')
+                  FEATURES="${FEATURES}- **${AREA}**: ${DESC} ([${SHORT_HASH}](https://github.com/${{ github.repository }}/commit/${COMMIT_HASH}))${NL}"
+                fi
+              elif [[ "$COMMIT_MSG" == FIX* ]]; then
+                TEMP="${COMMIT_MSG#FIX}"
+                TEMP="${TEMP#"${TEMP%%[![:space:]]*}"}"
+                if [[ "$TEMP" == \(* ]]; then
+                  AREA=$(echo "$TEMP" | sed 's/^(\([^)]*\)).*/\1/')
+                  DESC=$(echo "$TEMP" | sed 's/^([^)]*):[[:space:]]*//')
+                  FIXES="${FIXES}- **${AREA}**: ${DESC} ([${SHORT_HASH}](https://github.com/${{ github.repository }}/commit/${COMMIT_HASH}))${NL}"
+                fi
+              elif [[ "$COMMIT_MSG" == REFACTOR* ]]; then
+                TEMP="${COMMIT_MSG#REFACTOR}"
+                TEMP="${TEMP#"${TEMP%%[![:space:]]*}"}"
+                if [[ "$TEMP" == \(* ]]; then
+                  AREA=$(echo "$TEMP" | sed 's/^(\([^)]*\)).*/\1/')
+                  DESC=$(echo "$TEMP" | sed 's/^([^)]*):[[:space:]]*//')
+                  REFACTORS="${REFACTORS}- **${AREA}**: ${DESC} ([${SHORT_HASH}](https://github.com/${{ github.repository }}/commit/${COMMIT_HASH}))${NL}"
+                fi
+              fi
+            fi
+          done < <(printf '%s\n' "$COMMITS")
+
+          # Build changelog sections
+          if [ -n "$FEATURES" ]; then
+            CHANGELOG="${CHANGELOG}### ✨ Features${NL}${FEATURES}${NL}"
+          fi
+
+          if [ -n "$FIXES" ]; then
+            CHANGELOG="${CHANGELOG}### 🐛 Bug Fixes${NL}${FIXES}${NL}"
+          fi
+
+          if [ -n "$REFACTORS" ]; then
+            CHANGELOG="${CHANGELOG}### 🔨 Refactoring${NL}${REFACTORS}${NL}"
+          fi
+
+          # Add Docker image info
+          CHANGELOG="${CHANGELOG}### 🐳 Docker${NL}"
+          CHANGELOG="${CHANGELOG}- **Image**: \`databasus/databasus:v${NEW_VERSION}\`${NL}"
+          CHANGELOG="${CHANGELOG}- **Mirror**: \`ghcr.io/databasus/databasus:v${NEW_VERSION}\`${NL}"
+          CHANGELOG="${CHANGELOG}- **Platforms**: linux/amd64, linux/arm64${NL}"
+
+          # Use a random delimiter so any literal "EOF" line inside the
+          # changelog (e.g. inside a commit subject) cannot prematurely
+          # terminate the multiline output heredoc.
+          DELIMITER="EOF_$(openssl rand -hex 16)"
+          {
+            printf '%s<<%s\n' 'changelog' "$DELIMITER"
+            printf '%s\n' "$CHANGELOG"
+            printf '%s\n' "$DELIMITER"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1.1.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.determine-version.outputs.new_version }}
+          release_name: Release v${{ needs.determine-version.outputs.new_version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+
+  publish-helm-chart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [determine-version, merge-image-manifest]
+    if: ${{ needs.determine-version.outputs.should_release == 'true' }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Check out code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Helm
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
+        with:
+          version: v3.14.0
+
+      - name: Log in to GHCR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GHCR_TOKEN" | helm registry login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Update Chart.yaml with release version
+        run: |
+          VERSION="${{ needs.determine-version.outputs.new_version }}"
+          sed -i "s/^version: .*/version: ${VERSION}/" deploy/helm/Chart.yaml
+          sed -i "s/^appVersion: .*/appVersion: \"v${VERSION}\"/" deploy/helm/Chart.yaml
+          cat deploy/helm/Chart.yaml
+
+      - name: Package Helm chart
+        run: helm package deploy/helm --destination .
+
+      - name: Push Helm chart to GHCR
+        run: |
+          VERSION="${{ needs.determine-version.outputs.new_version }}"
+          helm push databasus-${VERSION}.tgz oci://ghcr.io/databasus/charts

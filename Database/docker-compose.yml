@@ -1,0 +1,254 @@
+services:
+  # ================================================================
+  # Local image build (opt-in via profile)
+  # ================================================================
+
+  # For local development only to test build. This service is gated
+  # behind the "image" profile so it does NOT start with a plain
+  # `docker compose up -d`. To run: docker compose up databasus-local
+  databasus-local:
+    profiles: ["image"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4005:4005"
+    volumes:
+      - ./databasus-data:/databasus-data
+    container_name: databasus-local
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "databasus", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  # ================================================================
+  # Backend dev services
+  # ================================================================
+
+  # For development only, because this DB
+  # exposes its port to the public
+  backend-db:
+    image: postgres:17
+    ports:
+      - "${BACKEND_DB_PORT:-5437}:5432"
+    environment:
+      - POSTGRES_DB=${DEV_DB_NAME}
+      - POSTGRES_USER=${DEV_DB_USERNAME}
+      - POSTGRES_PASSWORD=${DEV_DB_PASSWORD}
+    volumes:
+      - /var/lib/postgresql/data
+    container_name: backend-db
+    shm_size: 10gb
+
+  # Dedicated test DB so `make test` doesn't pollute the dev DB
+  backend-db-test:
+    image: postgres:17
+    ports:
+      - "${BACKEND_DB_TEST_PORT:-5438}:5432"
+    environment:
+      - POSTGRES_DB=${DEV_DB_NAME}
+      - POSTGRES_USER=${DEV_DB_USERNAME}
+      - POSTGRES_PASSWORD=${DEV_DB_PASSWORD}
+    volumes:
+      - /var/lib/postgresql/data
+    container_name: backend-db-test
+    shm_size: 10gb
+
+  # Valkey for caching
+  backend-valkey:
+    image: valkey/valkey:9.0.1-alpine
+    ports:
+      - "${VALKEY_PORT}:6379"
+    volumes:
+      - /data
+    container_name: backend-valkey
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # VictoriaLogs for external logging
+  backend-victoria-logs:
+    image: victoriametrics/victoria-logs:latest
+    container_name: backend-victoria-logs
+    ports:
+      - "${BACKEND_VICTORIA_LOGS_PORT:-9428}:9428"
+    command:
+      - -storageDataPath=/victoria-logs-data
+      - -retentionPeriod=7d
+      # VictoriaLogs only enforces basic auth when BOTH are set; password alone is a no-op.
+      - -httpAuth.username=databasus
+      - -httpAuth.password=devpassword
+    volumes:
+      - /victoria-logs-data
+    restart: unless-stopped
+
+  # ================================================================
+  # Test containers
+  # ================================================================
+
+  # Shared logical-PostgreSQL fixture: the always-on DB that GetTestPostgresConfig /
+  # CreateTestDatabase point ~100 cross-suite tests at (backups, restores, verification,
+  # healthcheck). The per-version PG logical tests (14-18 + SSL + mTLS) run on
+  # testcontainers, so only 16 — the shared fixture — stays on compose.
+  test-logical-postgres-16:
+    image: postgres:16
+    ports:
+      - "${TEST_LOGICAL_POSTGRES_16_PORT:-5004}:5432"
+    environment:
+      - POSTGRES_DB=testdb
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpassword
+    container_name: test-logical-postgres-16
+    shm_size: 1gb
+
+  # Init script appends a password-protected replication rule so pg_basebackup
+  # works from the host through Docker NAT (default pg_hba only allows
+  # replication from 127.0.0.1/32, but the Docker bridge presents the host
+  # connection as the bridge subnet IP). scram-sha-256 keeps the password
+  # requirement intact.
+  test-physical-postgres-17:
+    build:
+      dockerfile_inline: |
+        FROM postgres:17
+        COPY --chmod=0755 <<"EOF" /docker-entrypoint-initdb.d/02_allow_replication.sh
+        #!/bin/bash
+        set -e
+        echo "host replication all all scram-sha-256" >> "$$PGDATA/pg_hba.conf"
+        EOF
+    ports:
+      - "${TEST_PHYSICAL_POSTGRES_17_PORT:-5007}:5432"
+    environment:
+      - POSTGRES_DB=testdb
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpassword
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - summarize_wal=on
+      - -c
+      - max_wal_senders=10
+      - -c
+      - max_replication_slots=10
+      - -c
+      - wal_keep_size=512MB
+    container_name: test-physical-postgres-17
+    shm_size: 1gb
+
+  test-physical-postgres-18:
+    build:
+      dockerfile_inline: |
+        FROM postgres:18
+        COPY --chmod=0755 <<"EOF" /docker-entrypoint-initdb.d/02_allow_replication.sh
+        #!/bin/bash
+        set -e
+        echo "host replication all all scram-sha-256" >> "$$PGDATA/pg_hba.conf"
+        EOF
+    ports:
+      - "${TEST_PHYSICAL_POSTGRES_18_PORT:-5008}:5432"
+    environment:
+      - POSTGRES_DB=testdb
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpassword
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - summarize_wal=on
+      - -c
+      - max_wal_senders=10
+      - -c
+      - max_replication_slots=10
+      - -c
+      - wal_keep_size=512MB
+    container_name: test-physical-postgres-18
+    shm_size: 1gb
+
+  # ================================================================
+  # Live WAL-backup rig (always-on, for manual remote-WAL testing)
+  # ================================================================
+
+  # Live PG 18 that continuously generates WAL (via the wal-backup-loader sidecar),
+  # for manually exercising remote WAL backups. Mirrors test-physical-postgres-18's
+  # physical-backup config; the loader sidecar drives the traffic.
+  wal-backup-postgres-18:
+    build:
+      dockerfile_inline: |
+        FROM postgres:18
+        COPY --chmod=0755 <<"EOF" /docker-entrypoint-initdb.d/02_allow_replication.sh
+        #!/bin/bash
+        set -e
+        echo "host replication all all scram-sha-256" >> "$$PGDATA/pg_hba.conf"
+        EOF
+    ports:
+      - "${WAL_BACKUP_POSTGRES_18_PORT:-5018}:5432"
+    environment:
+      - POSTGRES_DB=${WAL_BACKUP_DB_NAME:-testdb}
+      - POSTGRES_USER=${WAL_BACKUP_DB_USER:-testuser}
+      - POSTGRES_PASSWORD=${WAL_BACKUP_DB_PASSWORD:-testpassword}
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+      - -c
+      - summarize_wal=on
+      - -c
+      - max_wal_senders=10
+      - -c
+      - max_replication_slots=10
+      - -c
+      - wal_keep_size=512MB
+    container_name: wal-backup-postgres-18
+    healthcheck:
+      # references the container's own POSTGRES_* env, so it follows the vars automatically
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    shm_size: 1gb
+
+  # Generates continuous WAL on wal-backup-postgres-18: random inserts every 10s,
+  # CHECKPOINT + WAL switch every 30s.
+  wal-backup-loader:
+    image: postgres:18
+    depends_on:
+      wal-backup-postgres-18:
+        condition: service_healthy
+    environment:
+      - PGHOST=wal-backup-postgres-18
+      - PGPORT=5432
+      - PGUSER=${WAL_BACKUP_DB_USER:-testuser}
+      - PGPASSWORD=${WAL_BACKUP_DB_PASSWORD:-testpassword}
+      - PGDATABASE=${WAL_BACKUP_DB_NAME:-testdb}
+    container_name: wal-backup-loader
+    restart: unless-stopped
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -euo pipefail
+        psql -v ON_ERROR_STOP=1 -c "CREATE TABLE IF NOT EXISTS wal_test_rows (
+          id bigserial PRIMARY KEY,
+          payload text NOT NULL,
+          created_at timestamptz NOT NULL DEFAULT now()
+        );"
+        iteration=0
+        while true; do
+          psql -v ON_ERROR_STOP=1 -c "INSERT INTO wal_test_rows (payload)
+            SELECT md5(random()::text) FROM generate_series(1, 100);"
+          iteration=$$((iteration + 1))
+          if (( iteration % 3 == 0 )); then
+            echo "force flush: CHECKPOINT + pg_switch_wal()"
+            psql -v ON_ERROR_STOP=1 -c "CHECKPOINT; SELECT pg_switch_wal();"
+          fi
+          sleep 10
+        done
+

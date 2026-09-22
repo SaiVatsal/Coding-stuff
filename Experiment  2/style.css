@@ -1,0 +1,160 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background-color: #f2f2f2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+.card {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 650px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Header Section */
+.header {
+  background-color: #00E5EE;
+  padding: 25px 30px;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* Navigation Section */
+.nav {
+  padding: 12px 30px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  gap: 15px;
+}
+
+.nav a {
+  color: #333333;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.nav a:hover {
+  text-decoration: underline;
+}
+
+
+.content {
+  padding: 30px;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.section p {
+  color: #333333;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+
+.footer {
+  background-color: #00E5EE;
+  text-align: center;
+  padding: 18px 30px;
+}
+
+.footer p {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}, Helvetica, sans-serif;
+    background:#f2f2f2;
+}
+
+.container{
+    width:1000px;
+    margin:30px auto;
+    background:white;
+    box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+header{
+    background:#11dce6;
+    padding:40px;
+}
+
+header h1{
+    font-size:52px;
+    color:#111;
+}
+
+nav{
+    background:white;
+    padding:15px 40px;
+    border-bottom:1px solid #ddd;
+}
+
+nav a{
+    text-decoration:none;
+    color:#333;
+    font-size:24px;
+    margin-right:20px;
+}
+
+main{
+    padding:40px;
+}
+
+section{
+    margin-bottom:60px;
+}
+
+section h2{
+    font-size:42px;
+    margin-bottom:25px;
+    color:#222;
+}
+
+section p{
+    font-size:28px;
+    color:#444;
+    line-height:1.6;
+}
+
+footer{
+    background:#11dce6;
+    text-align:center;
+    padding:30px;
+    font-size:28px;
+}

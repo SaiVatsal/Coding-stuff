@@ -1,0 +1,177 @@
+# Default values for databasus
+
+# Image configuration
+image:
+  repository: databasus/databasus
+  tag: null
+  # When set, overrides `tag` and pins to an immutable digest (e.g. "sha256:abc...").
+  digest: ""
+  pullPolicy: Always
+
+imagePullSecrets: []
+
+# StatefulSet configuration
+replicaCount: 1
+
+# RootCA setup, need name of secret in same namespace
+customRootCA: ""
+
+# Mirror logs to a rotating file at <mountPath>/databasus.log, 4 files of 5 MB. Off here because
+# the cluster already collects the container's stdout; turning it on requires `persistence`.
+logFileIsEnabled: false
+
+# Extra environment variables to inject into the databasus container.
+# Accepts the standard Kubernetes EnvVar shape (value or valueFrom).
+# Note: env values must be strings — use quoted "true"/"false" rather than bare
+# booleans, and pass `--set-string` on the CLI to avoid Kubernetes rejecting
+# non-string values.
+extraEnv: []
+# - name: IS_DISABLE_ANONYMOUS_TELEMETRY
+#   value: "true"
+# - name: LOG_LEVEL
+#   value: "info"
+# - name: OPEN_TELEMETRY_URL
+#   value: "grpc://otel-collector.observability:4317"
+# - name: SOME_TOKEN
+#   valueFrom:
+#     secretKeyRef:
+#       name: databasus-extras
+#       key: token
+
+# Extra envFrom sources mounted into the databasus container.
+# Accepts the standard Kubernetes EnvFromSource shape.
+extraEnvFrom: []
+# - secretRef:
+#     name: databasus-extras
+# - configMapRef:
+#     name: databasus-extras-cm
+
+# Extra volumes and volume mounts for the databasus container.
+# Use emptyDir mounts here to satisfy `securityContext.readOnlyRootFilesystem: true`
+# -- PostgreSQL and Valkey need writable /tmp, sockets and runtime dirs.
+extraVolumes: []
+# - name: tmp
+#   emptyDir: {}
+extraVolumeMounts: []
+# - name: tmp
+#   mountPath: /tmp
+
+# ServiceAccount for the pod.
+# Defaults keep backward-compatible behavior (namespace `default` SA) while
+# disabling token automounting -- on a hardened cluster this clears the
+# AutomountServiceAccountTokenTrueAndDefaultSA finding. Set `create: true` to
+# provision a dedicated ServiceAccount instead.
+serviceAccount:
+  create: false
+  name: ""
+  annotations: {}
+  automountServiceAccountToken: false
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 4005 # Service port
+  targetPort: 4005 # Internal container port
+  annotations: {}
+  # Headless service for StatefulSet
+  headless:
+    enabled: true
+# Security context for the pod (e.g. fsGroup for volume permissions)
+# NOTE: The entrypoint runs as root to bootstrap PostgreSQL and Valkey,
+# then drops privileges to a non-root user via gosu. Do not set
+# runAsNonRoot or runAsUser here -- it will prevent the container from starting.
+podSecurityContext: {}
+
+# Security context for the databasus container
+# See podSecurityContext note above regarding root requirement.
+securityContext: {}
+
+# Resource limits and requests
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "500m"
+  limits:
+    memory: "1Gi"
+    cpu: "500m"
+
+# Persistent storage configuration
+persistence:
+  enabled: true
+  # Storage class name. Leave empty to use cluster default.
+  # Examples: "longhorn", "standard", "gp2", etc.
+  storageClassName: ""
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  # Mount path in container
+  mountPath: /databasus-data
+  # Annotations applied to the PVC created by volumeClaimTemplates.
+  # Useful for backup tooling, e.g. k8up.io/backup: "false" to exclude
+  # the databasus-data volume from k8up/restic backups.
+  annotations: {}
+
+# Ingress configuration (disabled by default - using LoadBalancer instead)
+ingress:
+  enabled: false
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: databasus.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# HTTPRoute configuration for Gateway API
+route:
+  enabled: false
+  apiVersion: gateway.networking.k8s.io/v1
+  kind: HTTPRoute
+  annotations: {}
+  hostnames:
+    - databasus.example.com
+  parentRefs: []
+  filters: []
+  matches: []
+  timeouts: {}
+
+# Health checks configuration.
+# Probes target the dependency-free /system/version rather than the deep
+# /system/health, so a degraded-but-serving instance is never restarted.
+# Every field below is passed to Kubernetes as-is — to swap the handler, null out
+# the default one (`httpGet: null`), since Helm merges maps and a probe carrying
+# two handlers is rejected by the API server.
+livenessProbe:
+  enabled: true
+  httpGet:
+    path: /api/v1/system/version
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /api/v1/system/version
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# StatefulSet update strategy
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    partition: 0
+
+# Pod labels and annotations
+podLabels: {}
+podAnnotations: {}
+
+# Node selector, tolerations and affinity
+nodeSelector: {}
+tolerations: []
+affinity: {}

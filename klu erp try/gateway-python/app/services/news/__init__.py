@@ -1,0 +1,3 @@
+"""
+Eyefind & Weazel News Package
+"""

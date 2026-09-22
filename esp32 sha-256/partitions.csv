@@ -1,0 +1,8 @@
+# Name,   Type, SubType,  Offset,   Size,    Flags
+# Note: default_8MB.csv for ESP32-S3 with 8MB Flash
+nvs,      data, nvs,      0x9000,   0x6000,
+phy_init, data, phy,      0xf000,   0x1000,
+factory,  app,  factory,  0x10000,  0x300000,
+littlefs, data, spiffs,   0x310000, 0x100000,
+otadata,  data, ota,      0x410000, 0x2000,
+ota0,     app,  ota_0,    0x420000, 0x3E0000,

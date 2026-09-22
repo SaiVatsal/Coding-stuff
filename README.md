@@ -20,3 +20,5 @@ View your app in AI Studio: https://ai.studio/apps/e9e75da2-86b9-4fc3-943d-303aa
 5. Remove this line from the app's `build.gradle.kts` file: `signingConfig = signingConfigs.getByName("debugConfig")`
 6. Run the app on an emulator or physical device
 # All-The-stuff-i-made-till-known-private-n-public
+
+# Coding-stuff

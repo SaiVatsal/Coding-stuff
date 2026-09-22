@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextGen College ERP Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+    <section id="login-screen" class="view-screen active">
+        <div class="login-card 3d-effect">
+            <div class="brand-header">
+                <div class="brand-logo-3d">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h2>CAMPUS<span>ERP</span></h2>
+                <p>Academic Management Portal</p>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <i class="fa-solid fa-id-card input-icon"></i>
+                    <input type="text" id="username" placeholder="Student / ID Number" required autocomplete="off">
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+
+                <div class="captcha-wrapper">
+                    <div class="captcha-box">
+                        <canvas id="captchaCanvas" width="170" height="45"></canvas>
+                        <button type="button" class="btn-refresh" onclick="generateCaptcha()" title="Refresh Captcha">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-shield-halved input-icon"></i>
+                        <input type="text" id="captchaInput" placeholder="Enter CAPTCHA code" required autocomplete="off">
+                    </div>
+                </div>
+
+                <div id="login-error" class="error-msg"></div>
+
+                <button type="submit" class="btn-primary 3d-button">
+                    <span>Access Portal</span>
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </button>
+            </form>
+            <div class="login-footer">
+                <a href="#">Forgot Credentials?</a> • <a href="#">Security Protocol</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="dashboard-screen" class="view-screen">
+        
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-box">
+                    <i class="fa-solid fa-cube"></i>
+                </div>
+                <h3>CAMPUS<span>ERP</span></h3>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active"><i class="fa-solid fa-house"></i> <span>Home</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-id-card-clip"></i> <span>Academic Registration</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-calendar-check"></i> <span>Attendance Register</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-compass"></i> <span>Career Choice</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-book-open"></i> <span>Courses</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-chalkboard-user"></i> <span>CRT</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-book-bookmark"></i> <span>Counselling Diary</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-users"></i> <span>Clubs & Activities</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-file-pen"></i> <span>Exam Section</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-receipt"></i> <span>Fee Payments</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-hotel"></i> <span>Hostel Management</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-ticket"></i> <span>Hall Ticket</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-chart-line"></i> <span>My CGPA</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-building-columns"></i> <span>Library</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-bus"></i> <span>Transportation</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-headset"></i> <span>Ticketing Support</span></a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-logout" onclick="handleLogout()">
+                    <i class="fa-solid fa-power-off"></i> <span>Sign Out</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="topbar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search modules, courses, notices (v3.0)...">
+                </div>
+
+                <div class="topbar-actions">
+                    <div class="action-icon" title="Notifications">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="action-icon" title="Settings">
+                        <i class="fa-solid fa-gear"></i>
+                    </div>
+
+                    <div class="user-profile-pill">
+                        <div class="avatar">
+                            <i class="fa-solid fa-user-astronaut"></i>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-id">ID: 2500010001</span>
+                            <span class="user-status"><i class="fa-solid fa-circle"></i> Active Student</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-body">
+                
+                <div class="welcome-banner 3d-card">
+                    <div class="banner-text">
+                        <h1>Welcome Back, <span>Student Portal</span></h1>
+                        <p>Academic Year 2026 • Spring Semester • Computer Science & Engineering</p>
+                    </div>
+                    <div class="banner-badge">
+                        <i class="fa-solid fa-shield-halved"></i> Verified Session
+                    </div>
+                </div>
+
+                <div class="grid-cards">
+                    
+                    <div class="stat-card 3d-card">
+                        <div class="card-icon gradient-blue">
+                            <i class="fa-solid fa-newspaper"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Journals & Conferences</h3>
+                            <div class="card-metric">
+                                <span class="number">04</span>
+                                <span class="tag">Published</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card 3d-card">
+                        <div class="card-icon gradient-cyan">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Awards & Recognitions</h3>
+                            <div class="card-metric">
+                                <span class="number">02</span>
+                                <span class="tag">Achieved</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card 3d-card">
+                        <div class="card-icon gradient-emerald">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Workshops & Seminars</h3>
+                            <div class="card-metric">
+                                <span class="number">08</span>
+                                <span class="tag">Attended</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card 3d-card">
+                        <div class="card-icon gradient-purple">
+                            <i class="fa-solid fa-diagram-project"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Projects & Consultancy</h3>
+                            <div class="card-metric">
+                                <span class="number">03</span>
+                                <span class="tag">Active</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="overview-grid">
+                    <div class="content-box 3d-card">
+                        <div class="box-header">
+                            <h3><i class="fa-solid fa-chart-pie"></i> Academic Overview</h3>
+                            <span class="badge-pill">Current CGPA: 9.42</span>
+                        </div>
+                        <div class="progress-stats">
+                            <div class="stat-item">
+                                <div class="stat-info">
+                                    <span>Attendance Rate</span>
+                                    <strong>92.5%</strong>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" style="width: 92.5%;"></div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-info">
+                                    <span>Credits Completed</span>
+                                    <strong>84 / 120</strong>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill emerald" style="width: 70%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-box 3d-card">
+                        <div class="box-header">
+                            <h3><i class="fa-solid fa-bolt"></i> Quick Actions</h3>
+                        </div>
+                        <div class="quick-buttons">
+                            <button class="quick-btn"><i class="fa-solid fa-file-arrow-down"></i> Hall Ticket Download</button>
+                            <button class="quick-btn"><i class="fa-solid fa-credit-card"></i> Pay Semester Fees</button>
+                            <button class="quick-btn"><i class="fa-solid fa-calendar-days"></i> Time Table</button>
+                            <button class="quick-btn"><i class="fa-solid fa-square-poll-vertical"></i> Exam Results</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

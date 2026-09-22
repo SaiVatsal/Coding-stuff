@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Minecraft Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #87CEEB;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            background-color: #f0f8ff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            width: 800px;
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game configuration
+        const GRID_SIZE = 10;
+        const BLOCK_SIZE = 32;
+        let playerX = 5;
+        let playerY = 5;
+        const SPEED = 0.1;
+
+        function drawBlocks() {
+            ctx.fillStyle = '#a9a9a9';
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    if (i === playerX && j === playerY) {
+                        ctx.fillRect(50 + i * BLOCK_SIZE, 
+                                   50 + j * BLOCK_SIZE, 
+                                   BLOCK_SIZE, BLOCK_SIZE);
+                    }
+                }
+            }
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = 'brown';
+            ctx.fillRect(canvas.width/2 - 15, 
+                        canvas.height/2 - 15, 
+                        30, 30);
+        }
+
+        function updateCamera() {
+            if (playerX > 5) lastScrollX += SPEED;
+            if (playerX < GRID_SIZE - 5) lastScrollX -= SPEED;
+            if (playerY > 5) lastScrollY += SPEED;
+            if (playerY < GRID_SIZE - 5) lastScrollY -= SPEED;
+        }
+
+        function main() {
+            drawBlocks();
+            drawPlayer();
+            updateCamera();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            requestAnimationFrame(main);
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            canvas.width = 800;
+            canvas.height = 600;
+            main();
+        });
+    </script>
+</body>
+</html>

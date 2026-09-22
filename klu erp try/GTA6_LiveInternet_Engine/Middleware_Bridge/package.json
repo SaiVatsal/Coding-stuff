@@ -1,0 +1,17 @@
+{
+  "name": "gta6-eyefind-live-internet-bridge",
+  "version": "1.0.0",
+  "description": "High-Performance Live Internet Middleware Gateway for GTA VI Eyefind In-Game Engine",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "axios": "^1.7.2",
+    "ws": "^8.17.1",
+    "dotenv": "^16.4.5"
+  }
+}

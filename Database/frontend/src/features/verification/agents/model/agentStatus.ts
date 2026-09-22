@@ -1,0 +1,33 @@
+// Thresholds for translating last_seen_at into a status badge.
+// Agents are expected to heartbeat every 30 seconds; the 15-second list poll on
+// the page gives a snappy transition between Online and Stale.
+const ONLINE_WINDOW_MS = 90 * 1000;
+const STALE_WINDOW_MS = 5 * 60 * 1000;
+
+export type AgentStatus = 'never-seen' | 'online' | 'stale' | 'offline';
+
+export const getAgentStatus = (
+  lastSeenAt: string | undefined,
+  now: number = Date.now(),
+): AgentStatus => {
+  if (!lastSeenAt) return 'never-seen';
+
+  const diff = now - new Date(lastSeenAt).getTime();
+  if (diff <= ONLINE_WINDOW_MS) return 'online';
+  if (diff <= STALE_WINDOW_MS) return 'stale';
+  return 'offline';
+};
+
+export const AGENT_STATUS_COLORS: Record<AgentStatus, string> = {
+  'never-seen': 'default',
+  online: 'green',
+  stale: 'orange',
+  offline: 'red',
+};
+
+export const AGENT_STATUS_LABELS: Record<AgentStatus, string> = {
+  'never-seen': 'Never seen',
+  online: 'Online',
+  stale: 'Stale',
+  offline: 'Offline',
+};

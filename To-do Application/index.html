@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A minimal, elegant to-do list application for managing your daily tasks.">
+  <title>To-Do</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app-container">
+    <div id="quote-banner"></div>
+    <h1 id="app-title">todos</h1>
+    <div id="input-area">
+      <input type="text" id="todo-input" placeholder="What needs to be done?" autocomplete="off">
+      <button id="add-button" type="button" aria-label="Add todo">+</button>
+    </div>
+    <ul id="todo-list"></ul>
+    <footer id="app-footer">
+      <span id="items-count"></span>
+      <div id="filter-buttons">
+        <button class="filter-button active" data-filter="all">All</button>
+        <button class="filter-button" data-filter="active">Active</button>
+        <button class="filter-button" data-filter="completed">Completed</button>
+      </div>
+      <button id="clear-completed">Clear completed</button>
+    </footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+/* style.css */
+:root {
+  --gold-primary: #ffd700;
+  --gold-glow: rgba(255, 215, 0, 0.4);
+  --gold-dark: #b8860b;
+  --blue-sapphire: #0088ff;
+  --bg-dark: #000000;
+  --glass-bg: rgba(12, 12, 16, 0.65);
+  --glass-border: rgba(255, 215, 0, 0.25);
+  --font-title: 'Cinzel', serif;
+  --font-body: 'Montserrat', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: var(--font-body);
+}
+
+#canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  background: #000000;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* HUD Overlay Layout */
+#hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.5rem 3rem;
+  transition: opacity 0.5s ease;
+}
+
+/* Header */
+.hud-header {
+  pointer-events: auto;
+  text-align: center;
+  margin: 0 auto;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.hud-header:hover {
+  opacity: 1;
+}
+
+.divine-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  padding: 0.35rem 1rem;
+  border-radius: 50px;
+  backdrop-filter: blur(12px);
+  margin-bottom: 0.75rem;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--gold-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--gold-primary);
+  animation: pulse-dot 2s infinite alternate;
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1.4); opacity: 1; }
+}
+
+.badge-text {
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: #ffea9f;
+}
+
+.divine-title {
+  font-family: var(--font-title);
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 6px;
+  background: linear-gradient(135deg, #ffffff 20%, #ffe885 60%, #e6a100 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+}
+
+.divine-subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.3rem;
+}
+
+/* Controls Wrapper */
+.hud-controls-wrapper {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 1.25rem 2rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Timeline Track */
+.timeline-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.timeline-time {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  min-width: 45px;
+}
+
+.timeline-track {
+  position: relative;
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: visible;
+}
+
+.timeline-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ffaa00, #ffd700, #ffffff);
+  border-radius: 10px;
+  box-shadow: 0 0 12px var(--gold-primary);
+  transition: width 0.05s linear;
+}
+
+.timeline-handle {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  border: 2px solid var(--gold-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 15px var(--gold-primary);
+  transition: left 0.05s linear;
+  pointer-events: none;
+}
+
+/* Toolbar Buttons */
+.controls-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.left-tools, .right-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.center-tools {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.tool-btn, .control-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.6rem 1.1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  transition: all 0.25s ease;
+}
+
+.tool-btn:hover, .control-btn:hover {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: var(--gold-primary);
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.control-btn.play-main {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  padding: 0;
+  justify-content: center;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  border: none;
+  color: #000000;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+}
+
+.control-btn.play-main:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 35px rgba(255, 215, 0, 0.8);
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+}
+
+.play-icon, .pause-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.fps-pill {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fps-value {
+  color: var(--gold-primary);
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  #hud { padding: 1.5rem; }
+  .divine-title { font-size: 1.5rem; letter-spacing: 3px; }
+  .divine-subtitle { letter-spacing: 6px; font-size: 0.65rem; }
+  .hud-controls-wrapper { padding: 1rem; }
+  #camera-label { display: none; }
+}

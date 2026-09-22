@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KLU ERP - 3D Glassmorphic Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="canvas-container">
+        <canvas id="background-canvas"></canvas>
+    </div>
+    <div id="app">
+        <!-- Login View -->
+        <div id="login-view" class="view active">
+            <div class="glass-card login-card">
+                <div class="logo">
+                    <!-- Placeholder for KLU emblem -->
+                    <div class="klu-emblem">KLU</div>
+                    <h2>KLU ERP Portal</h2>
+                </div>
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="username">Student ID</label>
+                        <input type="text" id="username" placeholder="Enter your Student ID" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                    </div>
+                    <div class="input-group captcha-container">
+                        <label for="captcha">CAPTCHA</label>
+                        <div class="captcha-box">
+                            <canvas id="captcha-canvas"></canvas>
+                            <button type="button" id="refresh-captcha">Refresh</button>
+                        </div>
+                        <input type="text" id="captcha-input" placeholder="Enter CAPTCHA" required>
+                    </div>
+                    <button type="submit" class="login-btn">Login to KLU ERP</button>
+                </form>
+                <div id="login-error" class="error-message"></div>
+                <div id="login-loading" class="loading-overlay">
+                    <div class="spinner"></div>
+                    <p>Connecting to KLU Live Servers...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view">
+            <div class="dashboard-layout">
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <div class="sidebar-header">
+                        <div class="klu-emblem">KLU</div>
+                        <h3>KLU ERP</h3>
+                    </div>
+                    <nav class="sidebar-nav">
+                        <button class="nav-item active" data-section="home">Home</button>
+                        <button class="nav-item" data-section="academic-registration">Academic Registration</button>
+                        <button class="nav-item" data-section="attendance">Attendance Register</button>
+                        <button class="nav-item" data-section="career-choice">Career Choice</button>
+                        <button class="nav-item" data-section="courses">Courses</button>
+                        <button class="nav-item" data-section="crt">CRT</button>
+                        <button class="nav-item" data-section="counselling">Counselling Diary</button>
+                        <button class="nav-item" data-section="clubs">Clubs</button>
+                        <button class="nav-item" data-section="exam">Exam Section</button>
+                        <button class="nav-item" data-section="feedback">Feedback</button>
+                        <button class="nav-item" data-section="fee">Fee Payments</button>
+                        <button class="nav-item" data-section="hostel">Hostel</button>
+                        <button class="nav-item" data-section="hall-ticket">Hall Ticket</button>
+                        <button class="nav-item" data-section="infrastructure">Infrastructure</button>
+                        <button class="nav-item" data-section="library">Library</button>
+                        <button class="nav-item" data-section="my-cgpa">My CGPA</button>
+                        <button class="nav-item" data-section="profile">Profile</button>
+                        <button class="nav-item" data-section="psychometric">Psychometric</button>
+                        <button class="nav-item" data-section="quizzes">Quizzes</button>
+                        <button class="nav-item" data-section="registrar">Registrar</button>
+                        <button class="nav-item" data-section="support">Support</button>
+                        <button class="nav-item" data-section="transport">Transport</button>
+                        <button class="nav-item" data-section="time-tables">Time Tables</button>
+                        <button class="nav-item" data-section="phd-feedback">PhD Feedback</button>
+                    </nav>
+                </aside>
+
+                <!-- Main Content -->
+                <main class="main-content">
+                    <header class="profile-header">
+                        <div class="profile-info">
+                            <div class="verified-badge">Verified</div>
+                            <div class="student-info">
+                                <h2 id="student-id">Student ID: </h2>
+                                <p id="student-dept">Department: </p>
+                                <p id="student-year">Academic Year: </p>
+                            </div>
+                        </div>
+                        <button id="logout-btn" class="logout-btn">Logout</button>
+                    </header>
+
+                    <!-- Dynamic Content Sections -->
+                    <section id="home-section" class="content-section active">
+                        <h2>Welcome to KLU ERP Dashboard</h>
+                        <p>Your live academic dashboard powered by real-time data from KLU ERP.</p>
+                    </section>
+
+                    <section id="attendance-section" class="content-section">
+                        <h2>Live Attendance</h2>
+                        <div class="glass-card attendance-card">
+                            <div class="attendance-header">
+                                <h3>Attendance Overview</h3>
+                            </div>
+                            <div class="attendance-table-container">
+                                <table id="attendance-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject Code</th>
+                                            <th>Subject Name</th>
+                                            <th>Conducted</th>
+                                            <th>Attended</th>
+                                            <th>Percentage</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Rows will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="cgpa-section" class="content-section">
+                        <h2>Live CGPA</h2>
+                        <div class="glass-card cgpa-card">
+                            <div class="cgpa-value" id="cgpa-value">0.00</div>
+                            <p>Cumulative CGPA</p>
+                            <div class="semester-breakdown" id="semester-breakdown">
+                                <!-- Semester data will be populated here -->
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Other sections will be populated similarly -->
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

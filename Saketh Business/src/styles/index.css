@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-luxury: #FBF9F5;
+    --bg-subtle: #F5F2EB;
+    --text-primary: #1F1D1A;
+    --text-muted: #666159;
+    --accent-terracotta: #9E4A28;
+    --border-luxury: #E7E2D8;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: #FBF9F5;
+    color: #1F1D1A;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    overflow-x: hidden;
+  }
+
+  /* Refined typography helpers */
+  h1, h2, h3, .font-editorial {
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: -0.015em;
+  }
+
+  .font-brand {
+    font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+    letter-spacing: 0.08em;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #F5F2EB;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #D1CBBF;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #A8A193;
+  }
+}
+
+@layer components {
+  /* Luxury Button styles */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-luxury-dark text-luxury-bg font-sans font-medium text-xs tracking-wider uppercase transition-all duration-200 hover:bg-luxury-charcoal active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 border border-luxury-border-dark text-luxury-text font-sans font-medium text-xs tracking-wider uppercase bg-transparent transition-all duration-200 hover:bg-luxury-bg-subtle active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-luxury-accent text-white font-sans font-medium text-xs tracking-wider uppercase transition-all duration-200 hover:bg-luxury-accent-hover active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-4 py-2 text-luxury-text font-sans text-xs tracking-wider uppercase transition-all duration-200 hover:text-luxury-accent hover:bg-luxury-bg-subtle disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  /* Form Inputs */
+  .input-luxury {
+    @apply w-full px-4 py-3 bg-white border border-luxury-border text-luxury-text placeholder-luxury-faint font-sans text-sm transition-colors duration-150 focus:outline-none focus:border-luxury-dark focus:ring-1 focus:ring-luxury-dark disabled:bg-luxury-bg-subtle disabled:text-luxury-muted;
+  }
+
+  .input-label {
+    @apply block text-xs font-medium text-luxury-muted uppercase tracking-wider mb-1.5;
+  }
+
+  /* Badge variants */
+  .badge-editorial {
+    @apply inline-flex items-center px-2.5 py-0.5 text-[11px] font-medium tracking-wider uppercase border;
+  }
+
+  .badge-new {
+    @apply badge-editorial bg-luxury-bg-subtle text-luxury-dark border-luxury-border-dark;
+  }
+
+  .badge-sale {
+    @apply badge-editorial bg-luxury-accent-light text-luxury-accent border-luxury-accent/30 font-semibold;
+  }
+
+  .badge-low-stock {
+    @apply badge-editorial bg-luxury-gold-light text-luxury-gold border-luxury-gold/30;
+  }
+
+  .badge-out-stock {
+    @apply badge-editorial bg-luxury-bg-hover text-luxury-muted border-luxury-border;
+  }
+
+  /* Image zoom container */
+  .img-zoom-container {
+    @apply overflow-hidden relative;
+  }
+
+  .img-zoom-container img {
+    @apply transition-transform duration-500 ease-out;
+  }
+
+  .img-zoom-container:hover img {
+    @apply scale-105;
+  }
+}
+
+/* Glass & drawer backdrops */
+.backdrop-drawer {
+  background-color: rgba(20, 20, 20, 0.4);
+  backdrop-filter: blur(2px);
+}
+
+/* Print specific styles for GST invoice */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

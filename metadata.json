@@ -1,0 +1,6 @@
+{
+  "name": "Grand Racing Horizons",
+  "description": "A AAA car culture collectible card game. Collect hypercars, tune your rides, explore the interactive Grand Racing Horizons map, and experience turn-based strategic battles.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

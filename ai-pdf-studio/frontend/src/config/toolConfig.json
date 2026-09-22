@@ -1,0 +1,76 @@
+{
+  "tools": [
+    {
+      "id": "image-to-pdf",
+      "name": "Image to PDF Converter",
+      "route": "/tools/image-to-pdf",
+      "componentPath": "pages/ImageToPdfPage",
+      "description": "Convert your JPG, PNG, and TIFF images to an optimized PDF document easily and securely.",
+      "enabled": true,
+      "seo": { "howToSteps": [], "faqs": [] }
+    },
+    {
+      "id": "merge-pdf",
+      "name": "Merge PDF",
+      "route": "/tools/merge-pdf",
+      "componentPath": "pages/MergePdfPage",
+      "description": "Combine multiple PDFs in the order you want with the easiest PDF merger available.",
+      "enabled": true,
+      "seo": { "howToSteps": [], "faqs": [] }
+    },
+    {
+      "id": "compress-pdf",
+      "name": "Compress PDF",
+      "route": "/tools/compress-pdf",
+      "componentPath": "pages/CompressPdfPage",
+      "description": "Reduce file size while optimizing for maximal PDF quality.",
+      "enabled": true,
+      "seo": { "howToSteps": [], "faqs": [] }
+    },
+    {
+      "id": "split-pdf",
+      "name": "Split PDF",
+      "route": "/tools/split-pdf",
+      "componentPath": "pages/SplitPdfPage",
+      "description": "Separate one page or a whole set for easy conversion into independent PDF files.",
+      "enabled": true,
+      "seo": { "howToSteps": [], "faqs": [] }
+    },
+    {
+      "id": "pdf-to-word",
+      "name": "PDF to Word",
+      "route": "/tools/pdf-to-word",
+      "componentPath": "pages/PdfToWordPage",
+      "description": "Easily convert your PDF files into easy to edit DOC and DOCX documents.",
+      "enabled": true,
+      "seo": { "howToSteps": [], "faqs": [] }
+    },
+    {
+      "id": "edit-pdf",
+      "name": "Edit PDF",
+      "route": "/tools/edit-pdf",
+      "componentPath": "pages/EditPdfPage",
+      "description": "Add text, images, shapes or freehand annotations to a PDF document.",
+      "enabled": true,
+      "seo": { "howToSteps": [], "faqs": [] }
+    },
+    {
+      "id": "protect-pdf",
+      "name": "Protect PDF",
+      "route": "/tools/protect-pdf",
+      "componentPath": "pages/ProtectPdfPage",
+      "description": "Encrypt your PDF with a password to keep sensitive data confidential.",
+      "enabled": true,
+      "seo": { "howToSteps": [], "faqs": [] }
+    },
+    {
+      "id": "unlock-pdf",
+      "name": "Unlock PDF",
+      "route": "/tools/unlock-pdf",
+      "componentPath": "pages/UnlockPdfPage",
+      "description": "Remove PDF password security, giving you the freedom to use your PDFs as you want.",
+      "enabled": true,
+      "seo": { "howToSteps": [], "faqs": [] }
+    }
+  ]
+}

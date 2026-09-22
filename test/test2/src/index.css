@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Aura Smart Stadium OS - Custom Design System */
+:root {
+  /* Brand Colors - Vibrant Blue Palette */
+  --brand-primary: #3b82f6;       /* sky-500 main action color */
+  --brand-secondary: #1d4ed8;     /* brand-700 hover states */
+  --brand-accent: #0ea5e9;        /* sky-400 highlights */
+  
+  /* Typography Scale (Modern Proportional) */
+}
+
+/* Smooth transitions matching Apple/Microsoft design systems */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus styles for accessibility - no ring by default */
+:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar (macOS/Windows style) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+/* Leaflet map overrides */
+.leaflet-container {
+  font-family: inherit !important;
+}
+CSSEOF && cat "C:\Users\Vatsal's\Desktop\test\test2\src\index.css" | head -30
